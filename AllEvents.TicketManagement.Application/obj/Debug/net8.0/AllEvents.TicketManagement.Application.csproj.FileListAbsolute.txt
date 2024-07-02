@@ -1,0 +1,15 @@
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\bin\Debug\net8.0\AllEvents.TicketManagement.Application.deps.json
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\bin\Debug\net8.0\AllEvents.TicketManagement.Application.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\bin\Debug\net8.0\AllEvents.TicketManagement.Application.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\bin\Debug\net8.0\AllEvents.TicketManagement.Domain.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\bin\Debug\net8.0\AllEvents.TicketManagement.Domain.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\AllEvents.TicketManagement.Application.csproj.AssemblyReference.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\AllEvents.TicketManagement.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\AllEvents.TicketManagement.Application.AssemblyInfoInputs.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\AllEvents.TicketManagement.Application.AssemblyInfo.cs
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\AllEvents.TicketManagement.Application.csproj.CoreCompileInputs.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\AllEvent.2D3E7FEA.Up2Date
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\AllEvents.TicketManagement.Application.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\refint\AllEvents.TicketManagement.Application.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\AllEvents.TicketManagement.Application.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Application\obj\Debug\net8.0\ref\AllEvents.TicketManagement.Application.dll

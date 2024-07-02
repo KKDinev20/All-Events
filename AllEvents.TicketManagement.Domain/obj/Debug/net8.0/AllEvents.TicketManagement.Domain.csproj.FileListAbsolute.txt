@@ -1,0 +1,11 @@
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\bin\Debug\net8.0\AllEvents.TicketManagement.Domain.deps.json
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\bin\Debug\net8.0\AllEvents.TicketManagement.Domain.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\bin\Debug\net8.0\AllEvents.TicketManagement.Domain.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\obj\Debug\net8.0\AllEvents.TicketManagement.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\obj\Debug\net8.0\AllEvents.TicketManagement.Domain.AssemblyInfoInputs.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\obj\Debug\net8.0\AllEvents.TicketManagement.Domain.AssemblyInfo.cs
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\obj\Debug\net8.0\AllEvents.TicketManagement.Domain.csproj.CoreCompileInputs.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\obj\Debug\net8.0\AllEvents.TicketManagement.Domain.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\obj\Debug\net8.0\refint\AllEvents.TicketManagement.Domain.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\obj\Debug\net8.0\AllEvents.TicketManagement.Domain.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Domain\obj\Debug\net8.0\ref\AllEvents.TicketManagement.Domain.dll

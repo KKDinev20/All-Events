@@ -1,0 +1,15 @@
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\Microsoft.TestPlatform.AdapterUtilities.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\AllEvents.Tests.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\AllEvents.Tests.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\obj\Debug\AllEvents.TicketManagement.Tests.csproj.AssemblyReference.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\obj\Debug\AllEvents.TicketManagement.Tests.csproj.CoreCompileInputs.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\obj\Debug\AllEvent.6C82102F.Up2Date
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\obj\Debug\AllEvents.Tests.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.Tests\obj\Debug\AllEvents.Tests.pdb

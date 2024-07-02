@@ -1,0 +1,17 @@
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\bin\Debug\net8.0\AllEvents.TicketManagement.Persistence.deps.json
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\bin\Debug\net8.0\AllEvents.TicketManagement.Persistence.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\bin\Debug\net8.0\AllEvents.TicketManagement.Persistence.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\bin\Debug\net8.0\AllEvents.TicketManagement.Application.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\bin\Debug\net8.0\AllEvents.TicketManagement.Domain.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\bin\Debug\net8.0\AllEvents.TicketManagement.Application.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\bin\Debug\net8.0\AllEvents.TicketManagement.Domain.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\AllEvents.TicketManagement.Persistence.csproj.AssemblyReference.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\AllEvents.TicketManagement.Persistence.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\AllEvents.TicketManagement.Persistence.AssemblyInfoInputs.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\AllEvents.TicketManagement.Persistence.AssemblyInfo.cs
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\AllEvents.TicketManagement.Persistence.csproj.CoreCompileInputs.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\AllEvent.571322DC.Up2Date
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\AllEvents.TicketManagement.Persistence.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\refint\AllEvents.TicketManagement.Persistence.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\AllEvents.TicketManagement.Persistence.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Persistence\obj\Debug\net8.0\ref\AllEvents.TicketManagement.Persistence.dll

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\AllEvents.TicketManagement.App.props" />
+</Project>

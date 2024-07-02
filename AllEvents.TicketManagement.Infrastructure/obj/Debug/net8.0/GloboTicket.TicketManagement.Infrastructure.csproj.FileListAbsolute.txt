@@ -1,0 +1,17 @@
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\bin\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.deps.json
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\bin\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\bin\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\bin\Debug\net8.0\AllEvents.TicketManagement.Application.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\bin\Debug\net8.0\AllEvents.TicketManagement.Domain.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\bin\Debug\net8.0\AllEvents.TicketManagement.Application.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\bin\Debug\net8.0\AllEvents.TicketManagement.Domain.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.AssemblyInfo.cs
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\GloboTic.3084CD6A.Up2Date
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\refint\GloboTicket.TicketManagement.Infrastructure.dll
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\GloboTicket.TicketManagement.Infrastructure.pdb
+C:\Users\KonstantinDinev\source\repos\All-Events\AllEvents.TicketManagement.Infrastructure\obj\Debug\net8.0\ref\GloboTicket.TicketManagement.Infrastructure.dll
