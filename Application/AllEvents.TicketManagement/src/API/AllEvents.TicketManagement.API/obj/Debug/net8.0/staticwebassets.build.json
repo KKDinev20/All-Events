@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "KduUxXSjxTrPImvg+r1349urqLHQXc5o2rFoA+pgfro=",
+  "Source": "AllEvents.TicketManagement.API",
+  "BasePath": "_content/AllEvents.TicketManagement.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

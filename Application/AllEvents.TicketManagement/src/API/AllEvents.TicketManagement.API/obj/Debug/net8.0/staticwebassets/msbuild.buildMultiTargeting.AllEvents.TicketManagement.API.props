@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\AllEvents.TicketManagement.API.props" />
+</Project>

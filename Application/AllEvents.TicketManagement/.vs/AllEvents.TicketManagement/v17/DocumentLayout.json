@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Fileshare\\OneDrive - Accedia\\Documents\\All-Events\\Application\\AllEvents.TicketManagement\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{309DEE76-424B-42D1-B1E9-BD30370057AB}|src\\Core\\AllEvents.TicketManagement.Domain\\AllEvents.TicketManagement.Domain.csproj|c:\\fileshare\\onedrive - accedia\\documents\\all-events\\application\\allevents.ticketmanagement\\src\\core\\allevents.ticketmanagement.domain\\allevents.ticketmanagement.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{309DEE76-424B-42D1-B1E9-BD30370057AB}|src\\Core\\AllEvents.TicketManagement.Domain\\AllEvents.TicketManagement.Domain.csproj|solutionrelative:src\\core\\allevents.ticketmanagement.domain\\allevents.ticketmanagement.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{35A8C8E7-E6E2-45D6-9168-EDDC468C2424}|src\\UI\\AllEvents.TicketManagement.App\\AllEvents.TicketManagement.App.csproj|c:\\fileshare\\onedrive - accedia\\documents\\all-events\\application\\allevents.ticketmanagement\\src\\ui\\allevents.ticketmanagement.app\\allevents.ticketmanagement.app.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{35A8C8E7-E6E2-45D6-9168-EDDC468C2424}|src\\UI\\AllEvents.TicketManagement.App\\AllEvents.TicketManagement.App.csproj|solutionrelative:src\\ui\\allevents.ticketmanagement.app\\allevents.ticketmanagement.app.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8D2C6B1-3A3E-41BA-B2B8-EDDF2FB421D5}|src\\API\\AllEvents.TicketManagement.API\\AllEvents.TicketManagement.API.csproj|c:\\fileshare\\onedrive - accedia\\documents\\all-events\\application\\allevents.ticketmanagement\\src\\api\\allevents.ticketmanagement.api\\allevents.ticketmanagement.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{A8D2C6B1-3A3E-41BA-B2B8-EDDF2FB421D5}|src\\API\\AllEvents.TicketManagement.API\\AllEvents.TicketManagement.API.csproj|solutionrelative:src\\api\\allevents.ticketmanagement.api\\allevents.ticketmanagement.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AllEvents.TicketManagement.App.csproj",
+              "DocumentMoniker": "C:\\Fileshare\\OneDrive - Accedia\\Documents\\All-Events\\Application\\AllEvents.TicketManagement\\src\\UI\\AllEvents.TicketManagement.App\\AllEvents.TicketManagement.App.csproj",
+              "RelativeDocumentMoniker": "src\\UI\\AllEvents.TicketManagement.App\\AllEvents.TicketManagement.App.csproj",
+              "ToolTip": "C:\\Fileshare\\OneDrive - Accedia\\Documents\\All-Events\\Application\\AllEvents.TicketManagement\\src\\UI\\AllEvents.TicketManagement.App\\AllEvents.TicketManagement.App.csproj",
+              "RelativeToolTip": "src\\UI\\AllEvents.TicketManagement.App\\AllEvents.TicketManagement.App.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-07-03T08:40:53.521Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AllEvents.TicketManagement.Domain.csproj",
+              "DocumentMoniker": "C:\\Fileshare\\OneDrive - Accedia\\Documents\\All-Events\\Application\\AllEvents.TicketManagement\\src\\Core\\AllEvents.TicketManagement.Domain\\AllEvents.TicketManagement.Domain.csproj",
+              "RelativeDocumentMoniker": "src\\Core\\AllEvents.TicketManagement.Domain\\AllEvents.TicketManagement.Domain.csproj",
+              "ToolTip": "C:\\Fileshare\\OneDrive - Accedia\\Documents\\All-Events\\Application\\AllEvents.TicketManagement\\src\\Core\\AllEvents.TicketManagement.Domain\\AllEvents.TicketManagement.Domain.csproj",
+              "RelativeToolTip": "src\\Core\\AllEvents.TicketManagement.Domain\\AllEvents.TicketManagement.Domain.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-07-03T08:40:06.508Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AllEvents.TicketManagement.API.csproj",
+              "DocumentMoniker": "C:\\Fileshare\\OneDrive - Accedia\\Documents\\All-Events\\Application\\AllEvents.TicketManagement\\src\\API\\AllEvents.TicketManagement.API\\AllEvents.TicketManagement.API.csproj",
+              "RelativeDocumentMoniker": "src\\API\\AllEvents.TicketManagement.API\\AllEvents.TicketManagement.API.csproj",
+              "ToolTip": "C:\\Fileshare\\OneDrive - Accedia\\Documents\\All-Events\\Application\\AllEvents.TicketManagement\\src\\API\\AllEvents.TicketManagement.API\\AllEvents.TicketManagement.API.csproj",
+              "RelativeToolTip": "src\\API\\AllEvents.TicketManagement.API\\AllEvents.TicketManagement.API.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-07-03T08:37:53.156Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
