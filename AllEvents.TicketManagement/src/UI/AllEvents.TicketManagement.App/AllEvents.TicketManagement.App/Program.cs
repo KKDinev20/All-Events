@@ -1,30 +1,33 @@
+using AllEvents.TicketManagement.Persistance.Repositories;
 using AllEvents.TicketManagement.Persistance.Seeding;
-using Microsoft.AspNetCore.Http.Extensions;
 
 namespace AllEvents.TicketManagement.App
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
 
+            builder.Services.AddScoped<ReadEventsServiceReader>();
+            builder.Services.AddTransient<DataSeeder>();
 
             var app = builder.Build();
 
-            using(var scope = app.Services.CreateScope())
+            using (var scope = app.Services.CreateScope())
             {
                 var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-                 seeder.SeedAsync(".\\AllEvents.TicketManagement.Persistance\\Data\\EventsData.xlsx");
+                await seeder.SeedAsync("C:\\Users\\KonstantinDinev\\source\\repos\\All-Events\\AllEvents.TicketManagement\\src\\Infrastructure\\AllEvents.TicketManagement.Persistance\\Data\\EventsData.xlsx");
             }
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -36,9 +39,7 @@ namespace AllEvents.TicketManagement.App
 
             app.UseAuthorization();
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapRazorPages();
 
             app.Run();
         }
