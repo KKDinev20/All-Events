@@ -50,9 +50,15 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             // Act 
             var exception = await Assert.ThrowsAsync<FileNotFoundException>(() => reader.ReadAndSeedDataFromExcel(filePath));
 
+<<<<<<< HEAD
             // Assert
             Assert.Equal("The specified file does not exist.", exception.Message);
             Assert.Equal(filePath, exception.FileName);
+=======
+            //Assert
+            Assert.Equal("The specified file does not exist.", exception.Message);
+            Assert.Equal(filePath, exception.FileName); // You created this one as FileName obviously it won't be in the message
+>>>>>>> 4fd22a12496745728c20dae434dadc973d35e001
         }
 
         [Fact]
@@ -65,6 +71,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             // Act and Assert
             var events = await reader.ReadAndSeedDataFromExcel(filePath);
 
+<<<<<<< HEAD
             // Assert
             Assert.NotEmpty(events);
             Assert.All(events, eventItem =>
@@ -74,6 +81,12 @@ namespace AllEvents.TicketManagement.InfrastructureTests
                 Assert.True(eventItem.Price >= 0); 
                 Assert.True(Enum.IsDefined(typeof(EventCategory), eventItem.Category));
             });
+=======
+            //Assert 
+            // the file which you are opening contains worksheets
+            // add one that does not in the test project
+            Assert.Equal("The workbook does not contain any worksheets.", exception.Message);
+>>>>>>> 4fd22a12496745728c20dae434dadc973d35e001
         }
 
         [Fact]
@@ -86,7 +99,13 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             // Act 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => reader.ReadAndSeedDataFromExcel(filePath));
 
+<<<<<<< HEAD
             // Assert
+=======
+            //Assert
+            // the file which you are opening contains data
+            // add one that does not in the test project
+>>>>>>> 4fd22a12496745728c20dae434dadc973d35e001
             Assert.Equal("The workbook does not contain any data.", exception.Message);
         }
     }
