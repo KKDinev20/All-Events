@@ -16,8 +16,15 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
   </ItemGroup>
 
+	<ItemGroup>
+		<None Update="..\..\Infrastructure\AllEvents.TicketManagement.Persistance\Data\EventsData.xlsx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\Core\AllEvents.TicketManagement.Application\AllEvents.TicketManagement.Application.csproj" />
+    <ProjectReference Include="..\..\src\Core\AllEvents.TicketManagement.Domain\AllEvents.TicketManagement.Domain.csproj" />
     <ProjectReference Include="..\..\src\Infrastructure\AllEvents.TicketManagement.Persistance\AllEvents.TicketManagement.Persistance.csproj" />
   </ItemGroup>
 
