@@ -2,6 +2,7 @@ using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance;
 using AllEvents.TicketManagement.Persistance.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AllEvents.TicketManagement.InfrastructureTests
 {
@@ -43,43 +44,49 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         public async Task ReadEventsServiceReaderShouldCheckIfFileExists()
         {
             // Arrange
-            var filePath = "nonexistent.xlsx"; 
-
+            var filePath = "nonexistent.xlsx";
             var reader = new ReadEventsServiceReader();
 
             // Act 
             var exception = await Assert.ThrowsAsync<FileNotFoundException>(() => reader.ReadAndSeedDataFromExcel(filePath));
 
-            //Assert
-            Assert.Equal($"The specified file does not exist. (Parameter '{filePath}')", exception.Message);
+            // Assert
+            Assert.Equal("The specified file does not exist.", exception.Message);
+            Assert.Equal(filePath, exception.FileName);
         }
 
         [Fact]
-        public async Task ReadEventsServiceReaderShouldThrowInvalidOperationExceptionWhenNoWorksheets()
+        public async Task ReadEventsServiceReaderShouldReadDataCorrectly()
         {
             // Arrange
             var filePath = "../../../../../../AllEvents.TicketManagement/src/Infrastructure/AllEvents.TicketManagement.Persistance/Data/EventsData.xlsx";
             var reader = new ReadEventsServiceReader();
 
-            // Act 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => reader.ReadAndSeedDataFromExcel(filePath));
+            // Act and Assert
+            var events = await reader.ReadAndSeedDataFromExcel(filePath);
 
-            //Assert
-            Assert.Equal("The workbook does not contain any worksheets.", exception.Message);
+            // Assert
+            Assert.NotEmpty(events);
+            Assert.All(events, eventItem =>
+            {
+                Assert.NotNull(eventItem.Title);
+                Assert.NotNull(eventItem.Location);
+                Assert.True(eventItem.Price >= 0); 
+                Assert.True(Enum.IsDefined(typeof(EventCategory), eventItem.Category));
+            });
         }
 
         [Fact]
         public async Task ReadEventsServiceReaderShouldThrowInvalidOperationExceptionWhenNoData()
         {
             // Arrange
-            var filePath = "../../../../../../AllEvents.TicketManagement/src/Infrastructure/AllEvents.TicketManagement.Persistance/Data/EventsData.xlsx";
-
+            var filePath = "../../../../../../AllEvents.TicketManagement/src/Infrastructure/AllEvents.TicketManagement.Persistance/Data/NoData.xlsx";
             var reader = new ReadEventsServiceReader();
 
             // Act 
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => reader.ReadAndSeedDataFromExcel(filePath));
 
-            //Assert
+            // Assert
             Assert.Equal("The workbook does not contain any data.", exception.Message);
         }
     }
