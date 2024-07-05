@@ -9,7 +9,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         public async Task ReadEventsServiceReaderShouldReturnCorrectNumberOfEvents()
         {
             // Arrange
-            var filePath = "..\\..\\..\\..\\..\\..\\AllEvents.TicketManagement\\src\\Infrastructure\\AllEvents.TicketManagement.Persistance\\Data\\EventsData.xlsx";
+            var filePath = "../../../../../../AllEvents.TicketManagement/src/Infrastructure/AllEvents.TicketManagement.Persistance/Data/EventsData.xlsx";
             var reader = new ReadEventsServiceReader();
 
             // Act
