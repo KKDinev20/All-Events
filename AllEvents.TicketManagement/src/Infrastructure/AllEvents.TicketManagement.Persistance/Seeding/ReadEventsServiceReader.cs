@@ -23,6 +23,7 @@ namespace AllEvents.TicketManagement.Persistance.Repositories
 
             using (var reader = new ExcelPackage(new FileInfo(filePath)))
             {
+                await Task.Yield();
                 var worksheet = reader.Workbook.Worksheets.First(); 
 
                 if(reader.Workbook.Worksheets.Count == 0)

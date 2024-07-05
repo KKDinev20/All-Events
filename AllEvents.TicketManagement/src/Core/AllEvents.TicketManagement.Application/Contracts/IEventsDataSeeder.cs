@@ -9,6 +9,6 @@ namespace AllEvents.TicketManagement.Application.Contracts
 {
     public interface IEventsDataSeeder
     {
-        Task<List<Event>> ReadAndSeedDataFromExcel(string filePath);
+       Task<List<Event>> ReadAndSeedDataFromExcel(string filePath);
     }
 }
