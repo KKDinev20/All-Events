@@ -20,7 +20,10 @@ namespace AllEvents.TicketManagement.App
             using (var scope = app.Services.CreateScope())
             {
                 var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-                await seeder.SeedAsync("C:\\Users\\KonstantinDinev\\source\\repos\\All-Events\\AllEvents.TicketManagement\\src\\Infrastructure\\AllEvents.TicketManagement.Persistance\\Data\\EventsData.xlsx");
+                var basePath = AppContext.BaseDirectory;
+                var relativePath = Path.GetRelativePath(basePath, "../../../Infrastructure/AllEvents.TicketManagement.Persistance/Data/EventsData.xlsx");
+                var filePath = Path.Combine(basePath, relativePath);
+                await seeder.SeedAsync(filePath);
             }
 
 
