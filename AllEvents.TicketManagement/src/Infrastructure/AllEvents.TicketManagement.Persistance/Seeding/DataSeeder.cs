@@ -21,7 +21,7 @@ namespace AllEvents.TicketManagement.Persistance.Seeding
 
         public async Task SeedAsync(string filePath)
         {
-            var events = await readEventsServiceReader.ReadAndSeedDataFromExcel(filePath);
+            var events = await readEventsServiceReader.ReadDataFromExcel(filePath);
 
             if (!allEventsDbContext.Events.Any())
             {

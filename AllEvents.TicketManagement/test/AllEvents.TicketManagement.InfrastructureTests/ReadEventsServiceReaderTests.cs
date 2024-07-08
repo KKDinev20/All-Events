@@ -14,11 +14,11 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         public async Task ReadEventsServiceReaderShouldReturnCorrectNumberOfEvents()
         {
             // Arrange
-            var filePath = "../../../../../../AllEvents.TicketManagement/src/Infrastructure/AllEvents.TicketManagement.Persistance/Data/EventsData.xlsx";
+            var filePath = "../../../../../../AllEvents.TicketManagement/test/AllEvents.TicketManagement.InfrastructureTests/Data/EventsData.xlsx";
             var reader = new ReadEventsServiceReader();
 
             // Act
-            var events = await reader.ReadAndSeedDataFromExcel(filePath);
+            var events = await reader.ReadDataFromExcel(filePath);
 
             // Assert
             Assert.Equal(1000, events.Count);
@@ -28,11 +28,11 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         public async Task ReadEventsServiceReaderShouldMapDataCorrectly()
         {
             // Arrange
-            var filePath = "../../../../../../AllEvents.TicketManagement/src/Infrastructure/AllEvents.TicketManagement.Persistance/Data/EventsData.xlsx";
+            var filePath = "../../../../../../AllEvents.TicketManagement/test/AllEvents.TicketManagement.InfrastructureTests/Data/EventsData.xlsx";
             var reader = new ReadEventsServiceReader();
 
             // Act
-            var events = await reader.ReadAndSeedDataFromExcel(filePath);
+            var events = await reader.ReadDataFromExcel(filePath);
             var firstEvent = events.First();
 
             // Assert
@@ -50,7 +50,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             var reader = new ReadEventsServiceReader();
 
             // Act
-            var exception = await Assert.ThrowsAsync<FileNotFoundException>(() => reader.ReadAndSeedDataFromExcel(filePath));
+            var exception = await Assert.ThrowsAsync<FileNotFoundException>(() => reader.ReadDataFromExcel(filePath));
 
             // Assert
             Assert.Equal("The specified file does not exist.", exception.Message);
@@ -58,29 +58,29 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         }
 
         //It won't work properly, because an excel file always has atleast one worksheet.
-       /* [Fact]
-        public async Task ReadEventsServiceReaderShouldThrowInvalidOperationExceptionWhenNoWorksheets()
-        {
-            // Arrange
-            var filePath = "../../../../../../AllEvents.TicketManagement/src/Infrastructure/AllEvents.TicketManagement.Persistance/Data/NoWorksheets.xlsx"; // Path to a file with no worksheets
-            var reader = new ReadEventsServiceReader();
+        /* [Fact]
+         public async Task ReadEventsServiceReaderShouldThrowInvalidOperationExceptionWhenNoWorksheets()
+         {
+             // Arrange
+             var filePath = "../../../../../../AllEvents.TicketManagement/test/AllEvents.TicketManagement.InfrastructureTests/Data/NoWorksheet.xlsx";
+             var reader = new ReadEventsServiceReader();
 
-            // Act
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => reader.ReadAndSeedDataFromExcel(filePath));
+             // Act
+             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => reader.ReadAndSeedDataFromExcel(filePath));
 
-            // Assert
-            Assert.Equal("The workbook does not contain any worksheets.", exception.Message);
-        }*/
+             // Assert
+             Assert.Equal("The workbook does not contain any worksheets.", exception.Message);
+         }*/
 
         [Fact]
         public async Task ReadEventsServiceReaderShouldThrowInvalidOperationExceptionWhenNoData()
         {
             // Arrange
-            var filePath = "../../../../../../AllEvents.TicketManagement/src/Infrastructure/AllEvents.TicketManagement.Persistance/Data/NoData.xlsx"; // Path to a file with no data
+            var filePath = "../../../../../../AllEvents.TicketManagement/test/AllEvents.TicketManagement.InfrastructureTests/Data/NoData.xlsx";
             var reader = new ReadEventsServiceReader();
 
             // Act
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => reader.ReadAndSeedDataFromExcel(filePath));
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => reader.ReadDataFromExcel(filePath));
 
             // Assert
             Assert.Equal("The workbook does not contain any data.", exception.Message);
@@ -90,11 +90,11 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         public async Task ReadEventsServiceReaderShouldReadDataCorrectly()
         {
             // Arrange
-            var filePath = "../../../../../../AllEvents.TicketManagement/src/Infrastructure/AllEvents.TicketManagement.Persistance/Data/EventsData.xlsx";
+            var filePath = "../../../../../../AllEvents.TicketManagement/test/AllEvents.TicketManagement.InfrastructureTests/Data/EventsData.xlsx";
             var reader = new ReadEventsServiceReader();
 
             // Act
-            var events = await reader.ReadAndSeedDataFromExcel(filePath);
+            var events = await reader.ReadDataFromExcel(filePath);
 
             // Assert
             Assert.NotEmpty(events);
