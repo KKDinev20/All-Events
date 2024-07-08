@@ -18,7 +18,16 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
         {
             var totalCount = await eventRepository.GetCountAsync();
 
-            var items = await eventRepository.GetPagedEventsAsync(request.Page, request.PageSize);
+            var events = await eventRepository.GetPagedEventsAsync(request.Page, request.PageSize);
+
+            var items = events.Select(e => new EventModel
+            {
+                EventId = e.EventId,
+                Title = e.Title,
+                Location = e.Location,
+                Price = e.Price,
+                Category = e.Category
+            }).ToList();
 
             return new PagedResult<EventModel>
             {
