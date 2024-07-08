@@ -12,6 +12,7 @@ namespace AllEvents.TicketManagement.Domain.Entities
         Sports,
         Workshop,
         Festival,
-        Quiz
+        Quiz,
+        Other
     }
 }

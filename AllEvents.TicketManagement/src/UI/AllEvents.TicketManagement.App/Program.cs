@@ -1,3 +1,6 @@
+using AllEvents.TicketManagement.Persistance.Seeding;
+using Microsoft.AspNetCore.Http.Extensions;
+
 namespace AllEvents.TicketManagement.App
 {
     public class Program
@@ -9,7 +12,14 @@ namespace AllEvents.TicketManagement.App
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+
             var app = builder.Build();
+
+            using(var scope = app.Services.CreateScope())
+            {
+                var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+                 seeder.SeedAsync(".\\AllEvents.TicketManagement.Persistance\\Data\\EventsData.xlsx");
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
