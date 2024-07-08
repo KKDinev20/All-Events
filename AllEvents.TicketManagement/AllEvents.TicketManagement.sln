@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllEvents.TicketManagement.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllEvents.TicketManagement.API", "src\API\AllEvents.TicketManagement.API\AllEvents.TicketManagement.API.csproj", "{2B9CA445-857B-4BE5-AD99-C3306C05D668}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllEvents.TicketManagement.APITests", "test\AllEvents.TicketManagement.APITests\AllEvents.TicketManagement.APITests.csproj", "{1557DB5E-EF98-4BEE-AEDC-FF773B758730}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{2B9CA445-857B-4BE5-AD99-C3306C05D668}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B9CA445-857B-4BE5-AD99-C3306C05D668}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B9CA445-857B-4BE5-AD99-C3306C05D668}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1557DB5E-EF98-4BEE-AEDC-FF773B758730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1557DB5E-EF98-4BEE-AEDC-FF773B758730}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1557DB5E-EF98-4BEE-AEDC-FF773B758730}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1557DB5E-EF98-4BEE-AEDC-FF773B758730}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{8C060A44-FD77-4718-B0C5-BB4738BC901C} = {3EF287C9-1816-48E8-B0CE-A8C013418C02}
 		{C830941B-FE4C-4C7B-88BA-F06A5B9EAD32} = {790E2889-02DF-4970-98FD-9A4899A4FABD}
 		{2B9CA445-857B-4BE5-AD99-C3306C05D668} = {E4837B76-198A-4FF4-A432-F1CE4A9E11E3}
+		{1557DB5E-EF98-4BEE-AEDC-FF773B758730} = {790E2889-02DF-4970-98FD-9A4899A4FABD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0E145DFD-4E28-4299-8F28-12BAB77B8A5A}

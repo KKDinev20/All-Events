@@ -18,7 +18,7 @@ namespace AllEvents.TicketManagement.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<Event>>> RetrieveAllEvents(int page = 1, int pageSize = 10)
+        public async Task<ActionResult<PagedResult<EventModel>>> RetrieveAllEvents(int page = 1, int pageSize = 10)
         {
             var query = new GetAllEventsQuery(page, pageSize);
             var result = await mediator.Send(query);

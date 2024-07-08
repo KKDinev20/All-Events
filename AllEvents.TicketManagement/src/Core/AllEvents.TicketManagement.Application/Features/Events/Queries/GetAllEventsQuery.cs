@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllEvents.TicketManagement.Application.Features.Events.Queries
 {
-    public class GetAllEventsQuery: IRequest<PagedResult<Event>>
+    public class GetAllEventsQuery: IRequest<PagedResult<EventModel>>
     {
         public int Page { get; set; }
         public int PageSize { get; set; }
