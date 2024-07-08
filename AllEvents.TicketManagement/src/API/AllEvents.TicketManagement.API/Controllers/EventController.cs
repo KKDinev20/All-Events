@@ -1,8 +1,8 @@
-﻿using AllEvents.TicketManagement.Application.Models;
+﻿using AllEvents.TicketManagement.Application.Features.Events.Queries;
+using AllEvents.TicketManagement.Application.Models;
 using AllEvents.TicketManagement.Domain.Entities;
-using AllEvents.TicketManagement.Persistance;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AllEvents.TicketManagement.API.Controllers
 {
@@ -10,32 +10,19 @@ namespace AllEvents.TicketManagement.API.Controllers
     [ApiController]
     public class EventController : ControllerBase
     {
+        private readonly IMediator mediator;
 
-        private readonly AllEventsDbContext allEventsDbContext;
-
-        public EventController(AllEventsDbContext allEventsDbContext)
+        public EventController(IMediator mediator)
         {
-            this.allEventsDbContext = allEventsDbContext;
+            this.mediator = mediator;
         }
 
         [HttpGet]
         public async Task<ActionResult<PagedResult<Event>>> RetrieveAllEvents(int page = 1, int pageSize = 10)
         {
-            var totalCount = await allEventsDbContext.Events.CountAsync();
-
-            var items = await allEventsDbContext.Events
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-
-            return Ok(new PagedResult<Event>
-            {
-                Items = items, 
-                TotalCount = totalCount,
-                Page = page,
-                PageSize = pageSize
-            });
+            var query = new GetAllEventsQuery(page, pageSize);
+            var result = await mediator.Send(query);
+            return Ok(result);
         }
     }
 }

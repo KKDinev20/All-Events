@@ -11,7 +11,7 @@ namespace AllEvents.TicketManagement.Persistance.Repositories
 {
     public class ReadEventsServiceReader : IEventsDataSeeder
     {
-        public async Task<List<Event>> ReadAndSeedDataFromExcel(string filePath)
+        public async Task<List<Event>> ReadDataFromExcel(string filePath)
         {
             var events = new List<Event>();
 
