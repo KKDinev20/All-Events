@@ -1,4 +1,4 @@
-@AllEvents.TicketManagement.API_HostAddress = http://localhost:5022
+@AllEvents.TicketManagement.API_HostAddress = http://localhost:5128
 
 GET {{AllEvents.TicketManagement.API_HostAddress}}/weatherforecast/
 Accept: application/json
