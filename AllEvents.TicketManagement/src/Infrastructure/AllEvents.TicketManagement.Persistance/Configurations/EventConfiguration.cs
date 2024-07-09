@@ -14,16 +14,27 @@ namespace AllEvents.TicketManagement.Persistance.Configurations
         public void Configure(EntityTypeBuilder<Event> builder)
         {
             builder.HasKey(ev => ev.EventId);
+
             builder.Property(ev => ev.Title)
                 .IsRequired()
                 .HasMaxLength(50);
+
             builder.Property(ev => ev.Location)
                 .IsRequired()
                 .HasMaxLength(80);
+
             builder.Property(ev => ev.Price)
                 .IsRequired();
+
             builder.Property(ev => ev.Category)
                 .IsRequired();
+
+            builder.Property(e => e.EventDate)
+                .IsRequired();
+
+            builder.HasMany(e => e.Tickets)
+                   .WithOne(t => t.Event)
+                   .HasForeignKey(t => t.EventId);
         }
     }
 }

@@ -3,6 +3,7 @@ using AllEvents.TicketManagement.Domain.Entities;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,15 +41,38 @@ namespace AllEvents.TicketManagement.Persistance.Repositories
 
                 for (int row = 2; row <= rows; row++)
                 {
+                    var title = worksheet.Cells[row, 1].Value?.ToString();
+                    var location = worksheet.Cells[row, 2].Value?.ToString();
+                    var priceStr = worksheet.Cells[row, 3].Value?.ToString();
+                    var categoryStr = worksheet.Cells[row, 4].Value?.ToString();
+                    var eventDateStr = worksheet.Cells[row, 5].Value?.ToString();
+
+                    decimal price;
+                    if (!decimal.TryParse(priceStr, NumberStyles.Any, CultureInfo.InvariantCulture, out price))
+                    {
+                        throw new FormatException($"The input string '{priceStr}' was not in a correct format for decimal.");
+                    }
+
+                    EventCategory category;
+                    if (!Enum.TryParse(categoryStr, true, out category))
+                    {
+                        category = EventCategory.Other;
+                    }
+
+                    DateTime eventDate;
+                    if (!DateTime.TryParse(eventDateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out eventDate))
+                    {
+                        throw new FormatException($"The input string '{eventDateStr}' was not in a correct format for DateTime.");
+                    }
+
                     var eventItem = new Event
                     {
                         EventId = Guid.NewGuid(),
-                        Title = worksheet.Cells[row, 2].Value?.ToString(),
-                        Location = worksheet.Cells[row, 3].Value?.ToString(),
-                        Price = decimal.Parse(worksheet.Cells[row, 4].Value?.ToString()),
-                        Category = Enum.TryParse<EventCategory>(worksheet.Cells[row, 5].Value?.ToString(), out var category)
-                                ? category
-                                : EventCategory.Other
+                        Title = title,
+                        Location = location,
+                        Price = price,
+                        Category = category,
+                        EventDate = eventDate
                     };
 
                     events.Add(eventItem);
