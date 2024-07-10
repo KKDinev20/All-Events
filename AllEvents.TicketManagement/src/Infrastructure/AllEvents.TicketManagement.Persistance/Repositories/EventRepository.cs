@@ -2,6 +2,7 @@
 using AllEvents.TicketManagement.Application.Models;
 using AllEvents.TicketManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AllEvents.TicketManagement.Persistance.Repositories
 {
@@ -25,6 +26,11 @@ namespace AllEvents.TicketManagement.Persistance.Repositories
                 .Skip(page * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+        }
+
+        public async Task<Event> GetByIdAsync(Guid id)
+        {
+            return await _context.Events.FindAsync(id);
         }
     }
 }

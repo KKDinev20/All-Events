@@ -7,5 +7,6 @@ namespace AllEvents.TicketManagement.Application.Contracts
     {
         Task<int> GetCountAsync();
         Task<List<Event>> GetPagedEventsAsync(int page, int pageSize);
+        Task<Event> GetByIdAsync(Guid eventId);
     }
 }

@@ -24,6 +24,7 @@ namespace AllEvents.TicketManagement.API
             });
 
             builder.Services.AddScoped<IEventRepository, EventRepository>();
+            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
             builder.Services.AddMediatR(typeof(GetAllEventsQueryHandler).Assembly);
 
 
