@@ -14,6 +14,8 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
     {
         private readonly IEventRepository _eventRepository;
         private readonly ITicketRepository _ticketRepository;
+        private readonly byte[] aesKey = Encoding.UTF8.GetBytes("A3C9F7E20B567891"); 
+        private readonly byte[] aesIV = Encoding.UTF8.GetBytes("E1F5D1A2C9B81234");
 
         public GenerateTicketCommandHandler(IEventRepository eventRepository, ITicketRepository ticketRepository)
         {
@@ -31,45 +33,76 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
             }
 
             var ticketId = Guid.NewGuid();
-            var qrCodeHash = GenerateQRCodeHash(ticketId, request.PersonName);
-            var qrCodeImage = GenerateQRCodeImage(qrCodeHash);
+            var encryptedData = EncryptData($"{ticketId}:{request.PersonName}");
+            var qrCodeImage = GenerateQRCodeImage(encryptedData);
 
-            var ticket = new Ticket
-            {
-                TicketId = ticketId,
-                PersonName = request.PersonName,
-                EventTitle = @event.Title,
-                QRCode = qrCodeImage,
-                EventId = @event.EventId,
-                Event = @event
-            };
+            var ticket = new Ticket(
+                ticketId: ticketId,
+                personName: request.PersonName,
+                eventTitle: @event.Title,
+                qRCode: qrCodeImage,
+                eventId: @event.EventId
+            );
 
             await _ticketRepository.AddAsync(ticket);
 
-            return new TicketModel
-            {
-                TicketId = ticket.TicketId,
-                PersonName = ticket.PersonName,
-                EventTitle = ticket.EventTitle,
-                QRCode = ticket.QRCode
-            };
+            return new TicketModel(
+                ticketId: ticket.TicketId,
+                personName: ticket.PersonName,
+                eventTitle: ticket.EventTitle,
+                qRCode: ticket.QRCode
+            );
         }
 
-        private byte[] GenerateQRCodeHash(Guid ticketId, string personName)
+        private byte[] EncryptData(string plainText)
         {
-            var data = $"{ticketId}:{personName}";
-            using (SHA256 sha256 = SHA256.Create())
+            using (Aes aes = Aes.Create())
             {
-                return sha256.ComputeHash(Encoding.UTF8.GetBytes(data));
+                aes.Key = aesKey;
+                aes.IV = aesIV;
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (var ms = new MemoryStream())
+                {
+                    using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (var sw = new StreamWriter(cs))
+                        {
+                            sw.Write(plainText);
+                        }
+                        return ms.ToArray();
+                    }
+                }
             }
         }
 
-        private byte[] GenerateQRCodeImage(byte[] hash)
+        private string DecryptData(byte[] cipherText)
         {
-            var hashString = BitConverter.ToString(hash).Replace("-", "");
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = aesKey;
+                aes.IV = aesIV;
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (var ms = new MemoryStream(cipherText))
+                {
+                    using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (var sr = new StreamReader(cs))
+                        {
+                            return sr.ReadToEnd();
+                        }
+                    }
+                }
+            }
+        }
+
+        private byte[] GenerateQRCodeImage(byte[] encryptedData)
+        {
+            var encryptedString = Convert.ToBase64String(encryptedData);
             using (var qrGenerator = new QRCodeGenerator())
             {
-                var qrCodeData = qrGenerator.CreateQrCode(hashString, QRCodeGenerator.ECCLevel.Q);
+                var qrCodeData = qrGenerator.CreateQrCode(encryptedString, QRCodeGenerator.ECCLevel.Q);
                 using (QRCode qrCode = new QRCode(qrCodeData))
                 {
                     using (var qrCodeImage = qrCode.GetGraphic(20))

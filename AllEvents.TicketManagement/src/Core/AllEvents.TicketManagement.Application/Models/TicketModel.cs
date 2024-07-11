@@ -12,6 +12,14 @@ namespace AllEvents.TicketManagement.Application.Models
         public string PersonName { get; set; } = null!;
         public string EventTitle { get; set; } = null!;
 
-        public byte[] QRCode { get; set; }
+        public byte[] QRCode { get; set; } = null!;
+
+        public TicketModel(Guid ticketId, string personName, string eventTitle, byte[] qRCode)
+        {
+            TicketId = ticketId;
+            PersonName = personName;
+            EventTitle = eventTitle;
+            QRCode = qRCode;
+        }
     }
 }
