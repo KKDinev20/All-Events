@@ -22,7 +22,7 @@ namespace AllEvents.TicketManagement.App
             builder.Services.AddScoped<ReadEventsServiceReader>();
             builder.Services.AddTransient<DataSeeder>();
 
-
+            builder.Configuration.Bind("Security", new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Security"));
 
             var app = builder.Build();
 

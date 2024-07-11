@@ -3,10 +3,15 @@ using AllEvents.TicketManagement.Application.Features.Tickets.Commands;
 using AllEvents.TicketManagement.Application.Models;
 using AllEvents.TicketManagement.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using QRCoder;
+using System;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
 {
@@ -14,14 +19,23 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
     {
         private readonly IEventRepository _eventRepository;
         private readonly ITicketRepository _ticketRepository;
-        private readonly byte[] aesKey = Encoding.UTF8.GetBytes("A3C9F7E20B567891"); 
-        private readonly byte[] aesIV = Encoding.UTF8.GetBytes("E1F5D1A2C9B81234");
+        private readonly byte[] aesKey;
+        private readonly byte[] aesIV;
 
-        public GenerateTicketCommandHandler(IEventRepository eventRepository, ITicketRepository ticketRepository)
+        public GenerateTicketCommandHandler(IConfiguration configuration, IEventRepository eventRepository, ITicketRepository ticketRepository)
         {
             _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
             _ticketRepository = ticketRepository ?? throw new ArgumentNullException(nameof(ticketRepository));
+
+            aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
+            aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
+
+            if (aesKey == null || aesIV == null || aesKey.Length == 0 || aesIV.Length == 0)
+            {
+                throw new ApplicationException("AES_KEY or AES_IV configuration is missing or empty.");
+            }
         }
+
 
         public async Task<TicketModel> Handle(GenerateTicketCommand request, CancellationToken cancellationToken)
         {
@@ -76,26 +90,6 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
             }
         }
 
-        private string DecryptData(byte[] cipherText)
-        {
-            using (Aes aes = Aes.Create())
-            {
-                aes.Key = aesKey;
-                aes.IV = aesIV;
-                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-
-                using (var ms = new MemoryStream(cipherText))
-                {
-                    using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (var sr = new StreamReader(cs))
-                        {
-                            return sr.ReadToEnd();
-                        }
-                    }
-                }
-            }
-        }
 
         private byte[] GenerateQRCodeImage(byte[] encryptedData)
         {

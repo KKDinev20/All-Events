@@ -28,7 +28,7 @@ namespace AllEvents.TicketManagement.Persistance.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Event> GetByIdAsync(Guid id)
+        public async Task<Event?> GetByIdAsync(Guid id)
         {
             return await _context.Events.FindAsync(id);
         }

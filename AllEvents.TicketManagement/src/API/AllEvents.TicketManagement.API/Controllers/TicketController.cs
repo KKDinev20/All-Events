@@ -17,7 +17,7 @@ namespace AllEvents.TicketManagement.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TicketModel>> GenerateTickets([FromBody] GenerateTicketCommand command)
+        public async Task<ActionResult<TicketModel>> GenerateTicket([FromBody] GenerateTicketCommand command)
         {
             var ticket = await mediator.Send(command);
             return Ok(ticket);
