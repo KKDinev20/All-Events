@@ -1,6 +1,8 @@
+using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Persistance;
 using AllEvents.TicketManagement.Persistance.Repositories;
 using AllEvents.TicketManagement.Persistance.Seeding;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -14,22 +16,27 @@ namespace AllEvents.TicketManagement.App
 
             // Add services to the container.
             builder.Services.AddDbContext<AllEventsDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<AllEventsDbContext>();
+
             builder.Services.AddRazorPages();
 
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
             builder.Services.AddScoped<ReadEventsServiceReader>();
-            builder.Services.AddTransient<DataSeeder>();
 
-            builder.Configuration.Bind("Security", new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Security"));
+            builder.Services.AddTransient<DataSeeder>();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
 
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<AllEventsDbContext>(); 
-                dbContext.Database.EnsureCreated();
+                var dbContext = scope.ServiceProvider.GetRequiredService<AllEventsDbContext>();
+                dbContext.Database.Migrate();
 
                 var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
                 var basePath = AppContext.BaseDirectory;
@@ -39,20 +46,18 @@ namespace AllEvents.TicketManagement.App
                 await seeder.SeedAsync(filePath);
             }
 
-
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapRazorPages();

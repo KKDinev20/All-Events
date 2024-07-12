@@ -1,15 +1,11 @@
 ﻿using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance.Configurations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.Persistance
 {
-    public class AllEventsDbContext: DbContext
+    public class AllEventsDbContext: IdentityDbContext
     {
         public AllEventsDbContext(DbContextOptions<AllEventsDbContext> options)
             : base(options)
@@ -21,6 +17,8 @@ namespace AllEvents.TicketManagement.Persistance
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new TicketConfiguration());
         }

@@ -5,13 +5,9 @@ using AllEvents.TicketManagement.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using QRCoder;
-using System;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
 {
