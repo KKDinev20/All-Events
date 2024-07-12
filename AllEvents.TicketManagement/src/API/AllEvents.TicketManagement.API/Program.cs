@@ -24,6 +24,7 @@ namespace AllEvents.TicketManagement.API
             });
 
             builder.Services.AddScoped<IEventRepository, EventRepository>();
+            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
             builder.Services.AddMediatR(typeof(GetAllEventsQueryHandler).Assembly);
 
 
@@ -31,6 +32,8 @@ namespace AllEvents.TicketManagement.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Configuration.Bind("Security", new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Security"));
 
             var app = builder.Build();
 

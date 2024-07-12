@@ -15,6 +15,10 @@ namespace AllEvents.TicketManagement.Domain.Entities
         public decimal Price { get; set; }
         public EventCategory Category { get; set; }
 
-        public DateTime Created { get; set; } 
+        public DateTime EventDate { get; set; }
+
+        public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
+
     }
 }

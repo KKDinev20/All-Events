@@ -11,11 +11,18 @@ namespace AllEvents.TicketManagement.Persistance
 {
     public class AllEventsDbContext: DbContext
     {
-        public AllEventsDbContext(DbContextOptions<AllEventsDbContext> options) : base(options)
+        public AllEventsDbContext(DbContextOptions<AllEventsDbContext> options)
+            : base(options)
         {
         }
 
         public DbSet<Event> Events { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new EventConfiguration());
+            modelBuilder.ApplyConfiguration(new TicketConfiguration());
+        }
     }
 }

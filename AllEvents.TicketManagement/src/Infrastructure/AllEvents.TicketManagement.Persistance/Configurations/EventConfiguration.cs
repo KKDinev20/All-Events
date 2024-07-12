@@ -1,11 +1,6 @@
 ﻿using AllEvents.TicketManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.Persistance.Configurations
 {
@@ -13,17 +8,26 @@ namespace AllEvents.TicketManagement.Persistance.Configurations
     {
         public void Configure(EntityTypeBuilder<Event> builder)
         {
-            builder.HasKey(ev => ev.EventId);
-            builder.Property(ev => ev.Title)
-                .IsRequired()
-                .HasMaxLength(50);
-            builder.Property(ev => ev.Location)
-                .IsRequired()
-                .HasMaxLength(80);
-            builder.Property(ev => ev.Price)
-                .IsRequired();
-            builder.Property(ev => ev.Category)
-                .IsRequired();
+            builder.HasKey(e => e.EventId);
+
+            builder.Property(e => e.Title)
+                   .IsRequired()
+                   .HasMaxLength(2000); 
+
+            builder.Property(e => e.Location)
+                   .IsRequired()
+                   .HasMaxLength(2000);
+
+            builder.Property(e => e.Price)
+                   .IsRequired()
+                   .HasColumnType("decimal(18,2)");
+
+            builder.Property(e => e.EventDate)
+                   .IsRequired();
+
+            builder.HasMany(e => e.Tickets)
+                   .WithOne(t => t.Event)
+                   .HasForeignKey(t => t.EventId);
         }
     }
 }
