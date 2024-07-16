@@ -1,36 +1,65 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
-using AllEvents.TicketManagement.Application.Models;
 using AllEvents.TicketManagement.Domain.Entities;
+using AllEvents.TicketManagement.Persistance;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
-namespace AllEvents.TicketManagement.Persistance.Repositories
+public class EventRepository : IEventRepository
 {
-    public class EventRepository : IEventRepository
+    private readonly AllEventsDbContext _context;
+
+    public EventRepository(AllEventsDbContext context)
     {
-        private readonly AllEventsDbContext _context;
+        _context = context;
+    }
 
-        public EventRepository(AllEventsDbContext context)
+    public async Task<List<Event>> GetPagedEventsAsync(int pageIndex, int pageSize, bool includeDeleted = false)
+    {
+        IQueryable<Event> query = _context.Events;
+
+        if (!includeDeleted)
         {
-            _context = context;
+            query = query.Where(e => !e.IsDeleted);
         }
 
-        public async Task<int> GetCountAsync()
-        {
-            return await _context.Events.CountAsync();
-        }
+        return await query
+            .OrderBy(e => e.EventDate)
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
 
-        public async Task<List<Event>> GetPagedEventsAsync(int page, int pageSize)
-        {
-            return await _context.Events
-                .Skip(page * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-        }
+    public async Task<int> GetCountAsync()
+    {
+        return await _context.Events.CountAsync(e => !e.IsDeleted);
+    }
 
-        public async Task<Event?> GetByIdAsync(Guid id)
+    public async Task<bool> ExistsAsync(Guid eventId)
+    {
+        return await _context.Events.AnyAsync(e => e.EventId == eventId);
+    }
+
+    public async Task SoftDeleteAsync(Guid eventId)
+    {
+        var eventEntity = await _context.Events.FindAsync(eventId);
+        if (eventEntity != null)
         {
-            return await _context.Events.FindAsync(id);
+            eventEntity.IsDeleted = true;
+            await _context.SaveChangesAsync();
         }
     }
+
+    public async Task RestoreAsync(Guid eventId)
+    {
+        var eventEntity = await _context.Events.FindAsync(eventId);
+        if (eventEntity != null)
+        {
+            eventEntity.IsDeleted = false;
+            await _context.SaveChangesAsync();
+        }
+    }
+    public async Task<Event?> GetByIdAsync(Guid id)
+    {
+        return await _context.Events.FindAsync(id);
+    }
+
 }

@@ -17,6 +17,9 @@ namespace AllEvents.TicketManagement.Domain.Entities
 
         public DateTime EventDate { get; set; }
 
+        public int NrOfTickets { get; set; } = 100;
+        public bool IsDeleted { get; set; } = false;
+
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
 

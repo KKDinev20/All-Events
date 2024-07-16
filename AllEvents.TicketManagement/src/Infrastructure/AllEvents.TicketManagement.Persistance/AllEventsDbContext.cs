@@ -21,6 +21,12 @@ namespace AllEvents.TicketManagement.Persistance
 
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new TicketConfiguration());
+
+            modelBuilder.Entity<Event>(entity =>
+            {
+                entity.Property(e => e.NrOfTickets).HasDefaultValue(100);
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            });
         }
     }
 }

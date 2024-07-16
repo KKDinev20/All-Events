@@ -1,13 +1,12 @@
 using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Models;
 using AllEvents.TicketManagement.Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.App.Pages.Events
 {
-    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly IEventRepository _eventRepository;
@@ -24,7 +23,7 @@ namespace AllEvents.TicketManagement.App.Pages.Events
         public async Task OnGetAsync(int pageNumber = 1, int pageSize = 10)
         {
             var totalEvents = await _eventRepository.GetCountAsync();
-            Events = await _eventRepository.GetPagedEventsAsync(pageNumber - 1, pageSize);
+            Events = await _eventRepository.GetPagedEventsAsync(pageNumber - 1, pageSize, includeDeleted: true);
             CurrentPage = pageNumber;
             PageSize = pageSize;
             TotalPages = (int)System.Math.Ceiling((double)totalEvents / pageSize);
