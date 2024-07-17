@@ -1,9 +1,6 @@
 using AllEvents.TicketManagement.Application.Contracts;
-using AllEvents.TicketManagement.Application.Models;
 using AllEvents.TicketManagement.Domain.Entities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.App.Pages.Events
 {

@@ -1,5 +1,4 @@
-﻿using AllEvents.TicketManagement.Application.Models;
-using AllEvents.TicketManagement.Domain.Entities;
+﻿using AllEvents.TicketManagement.Domain.Entities;
 
 namespace AllEvents.TicketManagement.Application.Contracts
 {
