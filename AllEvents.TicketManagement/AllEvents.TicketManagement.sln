@@ -23,9 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllEvents.TicketManagement.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllEvents.TicketManagement.InfrastructureTests", "test\AllEvents.TicketManagement.InfrastructureTests\AllEvents.TicketManagement.InfrastructureTests.csproj", "{C830941B-FE4C-4C7B-88BA-F06A5B9EAD32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllEvents.TicketManagement.API", "src\API\AllEvents.TicketManagement.API\AllEvents.TicketManagement.API.csproj", "{2B9CA445-857B-4BE5-AD99-C3306C05D668}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllEvents.TicketManagement.API", "src\API\AllEvents.TicketManagement.API\AllEvents.TicketManagement.API.csproj", "{2B9CA445-857B-4BE5-AD99-C3306C05D668}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllEvents.TicketManagement.APITests", "test\AllEvents.TicketManagement.APITests\AllEvents.TicketManagement.APITests.csproj", "{1557DB5E-EF98-4BEE-AEDC-FF773B758730}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllEvents.TicketManagement.APITests", "test\AllEvents.TicketManagement.APITests\AllEvents.TicketManagement.APITests.csproj", "{1557DB5E-EF98-4BEE-AEDC-FF773B758730}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
