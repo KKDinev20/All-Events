@@ -1,27 +1,31 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
 {
-    public class RestoreEventCommandHandler: IRequestHandler<RestoreEventCommand>
+    public class RestoreEventCommandHandler : IRequestHandler<RestoreEventCommand, bool>
     {
-        private readonly IEventRepository _eventRepository;
+        private readonly IAllEventsDbContext _context;
 
-        public RestoreEventCommandHandler(IEventRepository eventRepository)
+        public RestoreEventCommandHandler(IAllEventsDbContext context)
         {
-            _eventRepository = eventRepository;
+            _context = context;
         }
 
-        public async Task<Unit> Handle(RestoreEventCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(RestoreEventCommand request, CancellationToken cancellationToken)
         {
-            await _eventRepository.RestoreAsync(request.EventId);
-            return Unit.Value;
+            var @event = await _context.Events.FindAsync(request.EventId);
+
+            if (@event == null || !@event.IsDeleted)
+            {
+                return false;
+            }
+
+            @event.Restore();
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }

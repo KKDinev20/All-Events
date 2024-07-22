@@ -23,6 +23,9 @@ namespace AllEvents.TicketManagement.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
+
+
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(

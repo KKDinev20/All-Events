@@ -9,19 +9,28 @@ using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
 {
-    public class DeleteEventCommandHandler : IRequestHandler<DeleteEventCommand>
+    public class DeleteEventCommandHandler : IRequestHandler<DeleteEventCommand, bool>
     {
-        private readonly IEventRepository _eventRepository;
+        private readonly IAllEventsDbContext _context;
 
-        public DeleteEventCommandHandler(IEventRepository eventRepository)
+        public DeleteEventCommandHandler(IAllEventsDbContext context)
         {
-            _eventRepository = eventRepository;
+            _context = context;
         }
 
-        public async Task<Unit> Handle(DeleteEventCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DeleteEventCommand request, CancellationToken cancellationToken)
         {
-            await _eventRepository.SoftDeleteAsync(request.EventId);
-            return Unit.Value;
+            var @event = await _context.Events.FindAsync(request.EventId);
+
+            if (@event == null || @event.IsDeleted)
+            {
+                return false;
+            }
+
+            @event.Delete();
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }

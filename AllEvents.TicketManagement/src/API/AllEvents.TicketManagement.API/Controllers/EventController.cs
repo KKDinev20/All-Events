@@ -1,54 +1,53 @@
-﻿using AllEvents.TicketManagement.Application.Contracts;
+﻿using AllEvents.TicketManagement.Application.Features.Events.Commands;
+using AllEvents.TicketManagement.Application.Features.Events.Commands.DeleteEvent;
 using AllEvents.TicketManagement.Application.Features.Events.Queries;
 using AllEvents.TicketManagement.Application.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-[Route("api/[controller]")]
-[ApiController]
-public class EventController : ControllerBase
+namespace AllEvents.TicketManagement.API.Controllers
 {
-    private readonly IMediator _mediator;
-    private readonly IEventRepository _eventRepository;
-
-    public EventController(IMediator mediator, IEventRepository eventRepository)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class EventController : ControllerBase
     {
-        _mediator = mediator;
-        _eventRepository = eventRepository;
-    }
+        private readonly IMediator _mediator;
 
-    [HttpGet]
-    public async Task<ActionResult<PagedResult<EventModel>>> RetrieveAllEvents(int page = 1, int pageSize = 10)
-    {
-        var query = new GetAllEventsQuery(page, pageSize);
-        var result = await _mediator.Send(query);
-        return Ok(result);
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> SoftDeleteEvent(Guid id)
-    {
-        var eventExists = await _eventRepository.ExistsAsync(id);
-        if (!eventExists)
+        public EventController(IMediator mediator)
         {
-            return NotFound(new { Message = "Event not found" });
+            _mediator = mediator;
         }
 
-        await _eventRepository.SoftDeleteAsync(id);
-        return Ok(new { Message = "Event successfully deleted" });
-    }
-
-    [HttpPut("restore/{id}")]
-    public async Task<IActionResult> RestoreEvent(Guid id)
-    {
-        var eventExists = await _eventRepository.ExistsAsync(id);
-        if (!eventExists)
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<EventModel>>> RetrieveAllEvents(int page = 1, int pageSize = 10)
         {
-            return NotFound(new { Message = "Event not found" });
+            var query = new GetAllEventsQuery(page, pageSize);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
 
-        await _eventRepository.RestoreAsync(id);
-        return Ok(new { Message = "Event successfully restored" });
-    }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEvent(Guid id)
+        {
+            var result = await _mediator.Send(new DeleteEventCommand { EventId = id });
+            if (result)
+            {
+                return Ok(new { Message = "Event deleted successfully." });
+            }
 
+            return NotFound(new { Message = "Event not found or already deleted." });
+        }
+
+        [HttpPut("restore/{id}")]
+        public async Task<IActionResult> RestoreEvent(Guid id)
+        {
+            var result = await _mediator.Send(new RestoreEventCommand { EventId = id });
+            if (result)
+            {
+                return Ok(new { Message = "Event restored successfully." });
+            }
+
+            return NotFound(new { Message = "Event not found or not deleted." });
+        }
+    }
 }

@@ -1,11 +1,12 @@
-﻿using AllEvents.TicketManagement.Domain.Entities;
+﻿using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllEvents.TicketManagement.Persistance
 {
-    public class AllEventsDbContext: IdentityDbContext
+    public class AllEventsDbContext: IdentityDbContext, IAllEventsDbContext
     {
         public AllEventsDbContext(DbContextOptions<AllEventsDbContext> options)
             : base(options)
@@ -27,6 +28,11 @@ namespace AllEvents.TicketManagement.Persistance
                 entity.Property(e => e.NrOfTickets).HasDefaultValue(100);
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             });
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

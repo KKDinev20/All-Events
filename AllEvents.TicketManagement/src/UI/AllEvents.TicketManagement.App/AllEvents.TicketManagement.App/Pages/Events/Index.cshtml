@@ -73,11 +73,11 @@ else
                 const response = await fetch(`https://localhost:7273/api/Event/${eventId}`, { method: 'DELETE' });
                 if (response.ok) {
                     const result = await response.json();
-                    alert(result.Message);
+                    alert('Event removed successfully.');
                     location.reload();
                 } else {
                     const errorText = await response.text();
-                    alert(errorText || 'Failed to delete the event');
+                    alert('Failed to delete the event');
                 }
             } catch (error) {
                 alert('Error: ' + error.message);
@@ -94,11 +94,11 @@ else
                 });
                 if (response.ok) {
                     const result = await response.json();
-                    alert(result.Message);
+                    alert('Event restored successfully.');
                     location.reload();
                 } else {
                     const errorText = await response.text();
-                    alert(errorText || 'Failed to restore the event');
+                    alert('Failed to restore the event');
                 }
             } catch (error) {
                 alert('Error: ' + error.message);
