@@ -17,6 +17,7 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Commands
 
         public async Task<Unit> Handle(CreateEventCommand request, CancellationToken cancellationToken)
         {
+
             var newEvent = new Event
             {
                 EventId = Guid.NewGuid(),
