@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllEvents.TicketManagement.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllEvents.TicketManagement.APITests", "test\AllEvents.TicketManagement.APITests\AllEvents.TicketManagement.APITests.csproj", "{1557DB5E-EF98-4BEE-AEDC-FF773B758730}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllEvents.TicketManagement.ApplicationTests", "test\AllEvents.TicketManagement.ApplicationTests\AllEvents.TicketManagement.ApplicationTests.csproj", "{20252543-9951-4138-AC9E-0817F0BFC0F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllEvents.TicketManagement.ApplicationTests", "test\AllEvents.TicketManagement.ApplicationTests\AllEvents.TicketManagement.ApplicationTests.csproj", "{20252543-9951-4138-AC9E-0817F0BFC0F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

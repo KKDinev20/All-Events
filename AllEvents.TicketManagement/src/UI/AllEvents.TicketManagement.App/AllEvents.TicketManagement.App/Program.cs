@@ -3,6 +3,7 @@ using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using AllEvents.TicketManagement.Persistance;
 using AllEvents.TicketManagement.Persistance.Repositories;
 using AllEvents.TicketManagement.Persistance.Seeding;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,9 @@ namespace AllEvents.TicketManagement.App
             builder.Services.AddScoped<ReadEventsServiceReader>();
 
             builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);
+            builder.Services.AddMediatR(typeof(UpdateEventCommandHandler).Assembly);
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateEventCommandValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UpdateEventCommandValidator>();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AllEventsDbContext>();
@@ -30,6 +34,16 @@ namespace AllEvents.TicketManagement.App
 
             builder.Services.AddScoped<IEventRepository, EventRepository>();
             builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    policyBuilder => policyBuilder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                );
+            });
 
             builder.Services.AddTransient<DataSeeder>();
 

@@ -38,6 +38,7 @@
                     <td>@eventItem.Category</td>
                     <td>@eventItem.EventDate.ToShortDateString()</td>
                     <td>
+                        <a class="btn btn-primary" asp-page="/Events/Update" asp-route-id="@eventItem.EventId">Update</a>
                         @if (eventItem.IsDeleted)
                         {
                             <button class="btn btn-success" onclick="restoreEvent('@eventItem.EventId')">Restore</button>

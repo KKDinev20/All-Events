@@ -1,0 +1,54 @@
+﻿@page "{id}"
+@model AllEvents.TicketManagement.App.Pages.Events.UpdateModel
+
+@{
+    ViewData["Title"] = "Update Event";
+}
+
+<h1>Update Event</h1>
+
+<form method="post">
+    <input type="hidden" asp-for="Event.EventId" />
+
+    <div class="form-group">
+        <label asp-for="Event.Title" class="control-label"></label>
+        <input asp-for="Event.Title" class="form-control" />
+        <span asp-validation-for="Event.Title" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Event.Location" class="control-label"></label>
+        <input asp-for="Event.Location" class="form-control" />
+        <span asp-validation-for="Event.Location" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Event.Price" class="control-label"></label>
+        <input asp-for="Event.Price" class="form-control" />
+        <span asp-validation-for="Event.Price" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Event.Category" class="control-label"></label>
+        <select asp-for="Event.Category" class="form-control">
+            <option value="">Select Category</option>
+            @foreach (var category in Enum.GetValues(typeof(EventCategory)).Cast<EventCategory>())
+            {
+                <option value="@category">@category</option>
+            }
+        </select>
+        <span asp-validation-for="Event.Category" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Event.EventDate" class="control-label"></label>
+        <input asp-for="Event.EventDate" class="form-control" type="date" />
+        <span asp-validation-for="Event.EventDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Event.NrOfTickets" class="control-label"></label>
+        <input asp-for="Event.NrOfTickets" class="form-control" />
+        <span asp-validation-for="Event.NrOfTickets" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
