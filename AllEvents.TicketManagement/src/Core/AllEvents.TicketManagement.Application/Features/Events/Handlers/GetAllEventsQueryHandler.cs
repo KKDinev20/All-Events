@@ -18,7 +18,13 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
         {
             var totalCount = await eventRepository.GetCountAsync();
 
-            var events = await eventRepository.GetPagedEventsAsync(request.Page, request.PageSize);
+            var events = await eventRepository.GetFilteredPagedEventsAsync(
+                request.Page,
+                request.PageSize,
+                request.Title,
+                request.Category,
+                request.SortBy,
+                request.Ascending);
 
             var items = events.Select(e => new EventModel
             {
@@ -26,16 +32,10 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
                 Title = e.Title,
                 Location = e.Location,
                 Price = e.Price,
-                Category = e.Category
+                Category = e.Category,
             }).ToList();
 
-            return new PagedResult<EventModel>
-            {
-                Items = items,
-                TotalCount = totalCount,
-                Page = request.Page,
-                PageSize = request.PageSize
-            };
+            return new PagedResult<EventModel>(items, totalCount, request.Page, request.PageSize);
         }
     }
 }

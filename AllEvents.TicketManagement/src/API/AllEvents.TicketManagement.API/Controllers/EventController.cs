@@ -2,6 +2,7 @@
 using AllEvents.TicketManagement.Application.Features.Events.Commands.DeleteEvent;
 using AllEvents.TicketManagement.Application.Features.Events.Queries;
 using AllEvents.TicketManagement.Application.Models;
+using AllEvents.TicketManagement.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,12 +20,21 @@ namespace AllEvents.TicketManagement.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<EventModel>>> RetrieveAllEvents(int page = 1, int pageSize = 10)
+        public async Task<ActionResult<PagedResult<EventModel>>> RetrieveAllEvents(
+            int page = 1,
+            int pageSize = 10,
+            string? title = null,
+            EventCategory? category = null,
+            string? sortBy = "EventDate",
+            bool ascending = true)
         {
-            var query = new GetAllEventsQuery(page, pageSize);
+            var query = new GetFilteredEventsQuery(page - 1, pageSize, title, category, sortBy, ascending);
             var result = await _mediator.Send(query);
             return Ok(result);
         }
+
+
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(Guid id)

@@ -1,14 +1,9 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.Persistance.Repositories
 {
-    public class TicketRepository: ITicketRepository
+    public class TicketRepository : ITicketRepository
     {
         private readonly AllEventsDbContext _DbContext;
 

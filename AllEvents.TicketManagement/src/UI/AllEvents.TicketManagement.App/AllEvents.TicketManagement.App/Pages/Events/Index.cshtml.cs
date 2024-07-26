@@ -11,19 +11,32 @@ namespace AllEvents.TicketManagement.App.Pages.Events
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
         public int PageSize { get; set; }
+        public string SelectedTitle { get; set; } = string.Empty;
+        public EventCategory? SelectedCategory { get; set; }
+        public string? SortBy { get; set; }
+        public bool Ascending { get; set; }
+        public List<EventCategory> Categories { get; set; } = new List<EventCategory>();
 
         public IndexModel(IEventRepository eventRepository)
         {
             _eventRepository = eventRepository;
         }
 
-        public async Task OnGetAsync(int pageNumber = 1, int pageSize = 10)
+        public async Task OnGetAsync(int pageNumber = 1, int pageSize = 10, string? title = null, EventCategory? category = null, string? sortBy = null, bool ascending = true)
         {
+            SelectedTitle = title ?? string.Empty;
+            SelectedCategory = category;
+            SortBy = sortBy;
+            Ascending = ascending;
+
             var totalEvents = await _eventRepository.GetCountAsync();
-            Events = await _eventRepository.GetPagedEventsAsync(pageNumber - 1, pageSize, includeDeleted: true);
+            Events = await _eventRepository.GetFilteredPagedEventsAsync(pageNumber - 1, pageSize, title, category, sortBy, ascending);
             CurrentPage = pageNumber;
             PageSize = pageSize;
             TotalPages = (int)System.Math.Ceiling((double)totalEvents / pageSize);
+
+            // Populate categories for dropdown
+            Categories = Enum.GetValues(typeof(EventCategory)).Cast<EventCategory>().ToList();
         }
     }
 }

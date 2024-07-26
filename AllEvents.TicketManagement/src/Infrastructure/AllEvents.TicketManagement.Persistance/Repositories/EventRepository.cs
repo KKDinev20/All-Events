@@ -12,17 +12,34 @@ public class EventRepository : IEventRepository
         _context = context;
     }
 
-    public async Task<List<Event>> GetPagedEventsAsync(int pageIndex, int pageSize, bool includeDeleted = false)
+    public async Task<List<Event>> GetFilteredPagedEventsAsync(
+        int pageIndex,
+        int pageSize,
+        string? title,
+        EventCategory? category,
+        string? sortBy,
+        bool ascending)
     {
         IQueryable<Event> query = _context.Events;
 
-        if (!includeDeleted)
+        if (!string.IsNullOrEmpty(title))
         {
-            query = query.Where(e => !e.IsDeleted);
+            query = query.Where(e => e.Title.Contains(title));
+        }
+
+        if (category.HasValue)
+        {
+            query = query.Where(e => e.Category == category.Value);
+        }
+
+        if (!string.IsNullOrEmpty(sortBy))
+        {
+            query = ascending
+                ? query.OrderBy(e => EF.Property<object>(e, sortBy))
+                : query.OrderByDescending(e => EF.Property<object>(e, sortBy));
         }
 
         return await query
-            .OrderBy(e => e.EventDate)
             .Skip(pageIndex * pageSize)
             .Take(pageSize)
             .ToListAsync();
