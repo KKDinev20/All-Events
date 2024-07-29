@@ -38,28 +38,6 @@ public class EventRepository : IEventRepository
         return await _context.Events.AnyAsync(e => e.EventId == eventId);
     }
 
-    public async Task SoftDeleteAsync(Guid eventId)
-    {
-        var eventEntity = await _context.Events.FindAsync(eventId);
-        if (eventEntity == null)
-        {
-            throw new InvalidOperationException("Event not found");
-        }
-        eventEntity.IsDeleted = true;
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task RestoreAsync(Guid eventId)
-    {
-        var eventEntity = await _context.Events.FindAsync(eventId);
-        if (eventEntity == null)
-        {
-            throw new InvalidOperationException("Event not found");
-        }
-        eventEntity.IsDeleted = false;
-        await _context.SaveChangesAsync();
-    }
-
     public async Task<Event?> GetByIdAsync(Guid id)
     {
         return await _context.Events.FindAsync(id);
