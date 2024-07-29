@@ -1,12 +1,12 @@
-﻿using AllEvents.TicketManagement.Application.Models;
-using AllEvents.TicketManagement.Domain.Entities;
+﻿using AllEvents.TicketManagement.Domain.Entities;
 
 namespace AllEvents.TicketManagement.Application.Contracts
 {
     public interface IEventRepository
     {
+        Task<List<Event>> GetPagedEventsAsync(int pageIndex, int pageSize, bool includeDeleted = false);
         Task<int> GetCountAsync();
-        Task<List<Event>> GetPagedEventsAsync(int page, int pageSize);
+        Task<bool> ExistsAsync(Guid eventId);
         Task<Event?> GetByIdAsync(Guid eventId);
     }
 }

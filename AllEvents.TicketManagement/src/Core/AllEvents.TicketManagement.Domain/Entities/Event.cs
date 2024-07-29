@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AllEvents.TicketManagement.Domain.Entities
+﻿namespace AllEvents.TicketManagement.Domain.Entities
 {
     public class Event
     {
@@ -17,8 +10,19 @@ namespace AllEvents.TicketManagement.Domain.Entities
 
         public DateTime EventDate { get; set; }
 
+        public int NrOfTickets { get; set; } = 100;
+        public bool IsDeleted { get; set; } = false;
+
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
+        public void Delete()
+        {
+            IsDeleted = true;
+        }
 
+        public void Restore()
+        {
+            IsDeleted = false;
+        }
     }
 }

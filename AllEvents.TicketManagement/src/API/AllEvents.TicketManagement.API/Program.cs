@@ -23,6 +23,19 @@ namespace AllEvents.TicketManagement.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
+
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    policyBuilder => policyBuilder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                );
+            });
+
             builder.Services.AddScoped<IEventRepository, EventRepository>();
             builder.Services.AddScoped<ITicketRepository, TicketRepository>();
             builder.Services.AddMediatR(typeof(GetAllEventsQueryHandler).Assembly);
@@ -45,7 +58,7 @@ namespace AllEvents.TicketManagement.API
             }
 
             app.UseHttpsRedirection();
-
+            app.UseCors();
             app.UseAuthorization();
 
 
