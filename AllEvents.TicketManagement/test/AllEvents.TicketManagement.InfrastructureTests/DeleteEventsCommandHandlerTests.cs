@@ -1,107 +1,37 @@
-﻿using AllEvents.TicketManagement.Domain.Entities;
+﻿using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Features.Events.Commands.DeleteEvent;
+using AllEvents.TicketManagement.Application.Features.Events.Handlers;
+using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace AllEvents.TicketManagement.InfrastructureTests
+public class DeleteEventsCommandHandlerTests
 {
-    public class DeleteEventsCommandHandlerTests
+    private readonly IMediator _mediator;
+    private readonly IAllEventsDbContext _context;
+
+    public DeleteEventsCommandHandlerTests()
     {
-        private readonly AllEventsDbContext _dbContext;
-        private readonly EventRepository _eventRepository;
+        var services = new ServiceCollection();
+        services.AddDbContext<AllEventsDbContext>(options =>
+            options.UseInMemoryDatabase(databaseName: "AllEvents"));
 
-        public DeleteEventsCommandHandlerTests()
-        {
-            var options = new DbContextOptionsBuilder<AllEventsDbContext>()
-                .UseInMemoryDatabase(databaseName: "AllEvents")
-                .Options;
-            _dbContext = new AllEventsDbContext(options);
-            _eventRepository = new EventRepository(_dbContext);
+        services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
+        services.AddMediatR(typeof(DeleteEventCommandHandler).Assembly);
 
-            SeedDatabase();
-        }
+        var serviceProvider = services.BuildServiceProvider();
+        _context = serviceProvider.GetService<IAllEventsDbContext>();
+        _mediator = serviceProvider.GetService<IMediator>();
 
-        private void SeedDatabase()
-        {
-            _dbContext.Events.AddRange(
-                new Event
-                {
-                    EventId = Guid.NewGuid(),
-                    Title = "Test Event 1",
-                    Location = "Test Location 1",
-                    Price = 100,
-                    Category = EventCategory.Other,
-                    EventDate = DateTime.Now.AddMonths(1),
-                    NrOfTickets = 100,
-                    IsDeleted = false
-                },
-                new Event
-                {
-                    EventId = Guid.NewGuid(),
-                    Title = "Test Event 2",
-                    Location = "Test Location 2",
-                    Price = 200,
-                    Category = EventCategory.Music,
-                    EventDate = DateTime.Now.AddMonths(2),
-                    NrOfTickets = 100,
-                    IsDeleted = false
-                }
-            );
-            _dbContext.SaveChanges();
-        }
-
-        [Fact]
-        public async Task SoftDeleteAsync_Should_Set_IsDeleted_To_True()
-        {
-            var eventId = _dbContext.Events.First().EventId;
-
-            await _eventRepository.SoftDeleteAsync(eventId);
-
-            var deletedEvent = await _dbContext.Events.FindAsync(eventId);
-            Assert.True(deletedEvent.IsDeleted);
-        }
-
-        [Fact]
-        public async Task SoftDeleteAsync_Should_Not_Affect_Other_Events()
-        {
-            var eventId = _dbContext.Events.First().EventId;
-            var anotherEventId = _dbContext.Events.Skip(1).First().EventId;
-
-            await _eventRepository.SoftDeleteAsync(eventId);
-
-            var notDeletedEvent = await _dbContext.Events.FindAsync(anotherEventId);
-            Assert.False(notDeletedEvent.IsDeleted);
-        }
-
-        [Fact]
-        public async Task SoftDeleteAsync_Should_Throw_Exception_If_Event_Not_Found()
-        {
-            var nonExistentEventId = Guid.NewGuid();
-
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _eventRepository.SoftDeleteAsync(nonExistentEventId));
-            Assert.Equal("Event not found", exception.Message);
-        }
-    }
-}
-
-public class RestoreEventsCommandHandlerTests
-{
-    private readonly AllEventsDbContext _dbContext;
-    private readonly EventRepository _eventRepository;
-
-    public RestoreEventsCommandHandlerTests()
-    {
-        var options = new DbContextOptionsBuilder<AllEventsDbContext>()
-            .UseInMemoryDatabase(databaseName: "AllEvents")
-            .Options;
-        _dbContext = new AllEventsDbContext(options);
-        _eventRepository = new EventRepository(_dbContext);
-
-        SeedDatabase();
+        SeedDatabase().GetAwaiter().GetResult();
     }
 
-    private void SeedDatabase()
+    private async Task SeedDatabase()
     {
-        _dbContext.Events.AddRange(
+        var events = new[]
+        {
             new Event
             {
                 EventId = Guid.NewGuid(),
@@ -111,7 +41,7 @@ public class RestoreEventsCommandHandlerTests
                 Category = EventCategory.Other,
                 EventDate = DateTime.Now.AddMonths(1),
                 NrOfTickets = 100,
-                IsDeleted = true
+                IsDeleted = false
             },
             new Event
             {
@@ -124,27 +54,46 @@ public class RestoreEventsCommandHandlerTests
                 NrOfTickets = 100,
                 IsDeleted = false
             }
-        );
-        _dbContext.SaveChanges();
+        };
+
+        _context.Events.AddRange(events);
+        await _context.SaveChangesAsync(default);
     }
 
     [Fact]
-    public async Task RestoreAsync_Should_Set_IsDeleted_To_False()
+    public async Task DeleteEventCommand_Should_Delete_Event()
     {
-        var eventId = _dbContext.Events.First(e => e.IsDeleted).EventId;
+        var eventId = _context.Events.First().EventId;
 
-        await _eventRepository.RestoreAsync(eventId);
+        var command = new DeleteEventCommand { EventId = eventId };
+        var result = await _mediator.Send(command);
 
-        var restoredEvent = await _dbContext.Events.FindAsync(eventId);
-        Assert.False(restoredEvent.IsDeleted);
+
+        var deletedEvent = await _context.Events.FindAsync(eventId);
+        Assert.NotNull(deletedEvent);
+        Assert.True(deletedEvent.IsDeleted);
     }
 
     [Fact]
-    public async Task RestoreAsync_Should_Throw_Exception_If_Event_Not_Found()
+    public async Task DeleteEventCommand_Should_Not_Affect_Other_Events()
+    {
+        var eventId = _context.Events.First().EventId;
+        var anotherEventId = _context.Events.Skip(1).First().EventId;
+
+        var command = new DeleteEventCommand { EventId = eventId };
+        await _mediator.Send(command);
+
+        var notDeletedEvent = await _context.Events.FindAsync(anotherEventId);
+        Assert.False(notDeletedEvent.IsDeleted);
+    }
+
+    [Fact]
+    public async Task DeleteEventCommand_Should_Return_False_If_Event_Not_Found()
     {
         var nonExistentEventId = Guid.NewGuid();
 
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _eventRepository.RestoreAsync(nonExistentEventId));
-        Assert.Equal("Event not found", exception.Message);
+        var command = new DeleteEventCommand { EventId = nonExistentEventId };
+        var result = await _mediator.Send(command);
+        Assert.False(result);
     }
 }

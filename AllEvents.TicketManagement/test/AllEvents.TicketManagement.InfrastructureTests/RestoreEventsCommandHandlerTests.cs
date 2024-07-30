@@ -1,35 +1,46 @@
-﻿using AllEvents.TicketManagement.Domain.Entities;
+﻿using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Features.Events.Commands;
+using AllEvents.TicketManagement.Application.Features.Events.Handlers;
+using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AllEvents.TicketManagement.InfrastructureTests
 {
     public class RestoreEventsCommandHandlerTests
     {
-        private readonly AllEventsDbContext _dbContext;
-        private readonly EventRepository _eventRepository;
+        private readonly IMediator _mediator;
+        private readonly IAllEventsDbContext _context;
 
         public RestoreEventsCommandHandlerTests()
         {
-            var options = new DbContextOptionsBuilder<AllEventsDbContext>()
-                .UseInMemoryDatabase(databaseName: "AllEvents")
-                .Options;
-            _dbContext = new AllEventsDbContext(options);
-            _eventRepository = new EventRepository(_dbContext);
+            var services = new ServiceCollection();
+            services.AddDbContext<AllEventsDbContext>(options =>
+                options.UseInMemoryDatabase(databaseName: "AllEvents"));
 
-            SeedDatabase();
+            services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
+            services.AddMediatR(typeof(RestoreEventCommandHandler).Assembly);
+
+            var serviceProvider = services.BuildServiceProvider();
+            _context = serviceProvider.GetService<IAllEventsDbContext>();
+            _mediator = serviceProvider.GetService<IMediator>();
+
+            SeedDatabase().GetAwaiter().GetResult();
         }
 
-        private void SeedDatabase()
+        private async Task SeedDatabase()
         {
-            _dbContext.Events.AddRange(
+            var events = new[]
+            {
                 new Event
                 {
                     EventId = Guid.NewGuid(),
                     Title = "Test Event 1",
                     Location = "Test Location 1",
                     Price = 100,
-                    Category = EventCategory.Festival,
+                    Category = EventCategory.Other,
                     EventDate = DateTime.Now.AddMonths(1),
                     NrOfTickets = 100,
                     IsDeleted = true
@@ -40,32 +51,38 @@ namespace AllEvents.TicketManagement.InfrastructureTests
                     Title = "Test Event 2",
                     Location = "Test Location 2",
                     Price = 200,
-                    Category = EventCategory.Quiz,
+                    Category = EventCategory.Music,
                     EventDate = DateTime.Now.AddMonths(2),
                     NrOfTickets = 100,
                     IsDeleted = false
                 }
-            );
-            _dbContext.SaveChanges();
+            };
+
+            _context.Events.AddRange(events);
+            await _context.SaveChangesAsync(default);
         }
 
         [Fact]
-        public async Task RestoreAsync_Should_Set_IsDeleted_To_False()
+        public async Task RestoreEventCommand_Should_Restore_Event()
         {
-            var eventId = _dbContext.Events.First(e => e.IsDeleted).EventId;
+            var eventId = _context.Events.First(e => e.IsDeleted).EventId;
 
-            await _eventRepository.RestoreAsync(eventId);
+            var command = new RestoreEventCommand { EventId = eventId };
+            var result = await _mediator.Send(command);
 
-            var restoredEvent = await _dbContext.Events.FindAsync(eventId);
+            var restoredEvent = await _context.Events.FindAsync(eventId);
+            Assert.True(result);
             Assert.False(restoredEvent.IsDeleted);
         }
 
         [Fact]
-        public async Task RestoreAsync_Should_Throw_Exception_If_Event_Not_Found()
+        public async Task RestoreEventCommand_Should_Return_False_If_Event_Not_Found()
         {
             var nonExistentEventId = Guid.NewGuid();
 
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _eventRepository.RestoreAsync(nonExistentEventId));
+            var command = new RestoreEventCommand { EventId = nonExistentEventId };
+            var result = await _mediator.Send(command);
+            Assert.False(result);
         }
     }
 }
