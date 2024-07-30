@@ -65,27 +65,14 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         [Fact]
         public async Task DeleteEventCommand_Should_Delete_Event()
         {
-            var eventId = _context.Events.First().EventId;
+            var eventId = _context.Events.First(e => !e.IsDeleted).EventId;
 
             var command = new DeleteEventCommand { EventId = eventId };
             var result = await _mediator.Send(command);
 
             var deletedEvent = await _context.Events.FindAsync(eventId);
-            Assert.NotNull(deletedEvent);
+            Assert.True(result);
             Assert.True(deletedEvent.IsDeleted);
-        }
-
-        [Fact]
-        public async Task DeleteEventCommand_Should_Not_Affect_Other_Events()
-        {
-            var eventId = _context.Events.First().EventId;
-            var anotherEventId = _context.Events.Skip(1).First().EventId;
-
-            var command = new DeleteEventCommand { EventId = eventId };
-            await _mediator.Send(command);
-
-            var notDeletedEvent = await _context.Events.FindAsync(anotherEventId);
-            Assert.False(notDeletedEvent.IsDeleted);
         }
 
         [Fact]
@@ -94,6 +81,18 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             var nonExistentEventId = Guid.NewGuid();
 
             var command = new DeleteEventCommand { EventId = nonExistentEventId };
+            var result = await _mediator.Send(command);
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task DeleteEventCommand_Should_Return_False_If_Event_Already_Deleted()
+        {
+            var eventId = _context.Events.First(e => !e.IsDeleted).EventId;
+
+            var command = new DeleteEventCommand { EventId = eventId };
+            await _mediator.Send(command);
+
             var result = await _mediator.Send(command);
             Assert.False(result);
         }

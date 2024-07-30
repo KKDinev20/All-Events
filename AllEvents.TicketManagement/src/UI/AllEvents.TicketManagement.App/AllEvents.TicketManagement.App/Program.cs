@@ -1,10 +1,11 @@
 using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using AllEvents.TicketManagement.Persistance;
 using AllEvents.TicketManagement.Persistance.Repositories;
 using AllEvents.TicketManagement.Persistance.Seeding;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace AllEvents.TicketManagement.App
 {
@@ -14,12 +15,13 @@ namespace AllEvents.TicketManagement.App
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddDbContext<AllEventsDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
+            builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetRequiredService<AllEventsDbContext>());
+            builder.Services.AddScoped<ReadEventsServiceReader>();
 
+            builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AllEventsDbContext>();
@@ -27,9 +29,10 @@ namespace AllEvents.TicketManagement.App
             builder.Services.AddRazorPages();
 
             builder.Services.AddScoped<IEventRepository, EventRepository>();
-            builder.Services.AddScoped<ReadEventsServiceReader>();
+            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 
             builder.Services.AddTransient<DataSeeder>();
+
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
             builder.Logging.AddDebug();
@@ -49,7 +52,6 @@ namespace AllEvents.TicketManagement.App
                 await seeder.SeedAsync(filePath);
             }
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");

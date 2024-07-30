@@ -27,7 +27,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             _context = serviceProvider.GetService<IAllEventsDbContext>();
             _mediator = serviceProvider.GetService<IMediator>();
 
-            SeedDatabase().GetAwaiter().GetResult(); 
+            SeedDatabase().GetAwaiter().GetResult();
         }
 
         private async Task SeedDatabase()
