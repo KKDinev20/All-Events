@@ -13,8 +13,8 @@ namespace AllEvents.TicketManagement.Application.Contracts
             bool ascending);
         Task<int> GetCountAsync();
         Task<bool> ExistsAsync(Guid eventId);
-        Task SoftDeleteAsync(Guid eventId);
-        Task RestoreAsync(Guid eventId);
+        Task<int> GetFilteredCountAsync(string? title, EventCategory? category);
+
         Task<Event?> GetByIdAsync(Guid eventId);
     }
 }

@@ -45,13 +45,14 @@
                 <!option value="false" @(Model.Ascending == false ? "selected" : "")>Desc</!option>
             </select>
         </div>
+        <input type="hidden" name="pageNumber" value="@Model.CurrentPage" />
         <button type="submit" class="btn btn-sm btn-secondary">Filter</button>
     </form>
 </div>
 
 @if (Model.Events != null && Model.Events.Any())
 {
-    <table class="table table-sm  table-striped text-center">
+    <table class="table table-sm table-striped text-center">
         <thead>
             <tr>
                 <th>Title</th>
@@ -89,6 +90,11 @@
 
     <div class="pagination-controls d-flex justify-content-center align-items-center">
         <form method="get" class="d-flex align-items-center">
+            <input type="hidden" name="title" value="@Model.SelectedTitle" />
+            <input type="hidden" name="category" value="@Model.SelectedCategory" />
+            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+            <input type="hidden" name="ascending" value="@Model.Ascending" />
+            <input type="hidden" name="pageSize" value="@Model.PageSize" />
             <button type="submit" class="btn btn-sm btn-primary me-2" name="pageNumber" value="@(Model.CurrentPage - 1)" @(Model.CurrentPage <= 1 ? "disabled" : "")>Previous</button>
             <span>Page @Model.CurrentPage of @Model.TotalPages</span>
             <button type="submit" class="btn btn-sm btn-primary ms-2" name="pageNumber" value="@(Model.CurrentPage + 1)" @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")>Next</button>

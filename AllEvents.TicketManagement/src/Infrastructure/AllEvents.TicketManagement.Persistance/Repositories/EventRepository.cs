@@ -12,6 +12,19 @@ public class EventRepository : IEventRepository
         _context = context;
     }
 
+    public async Task<List<Event>> GetPagedEventsAsync(int page, int pageSize)
+    {
+        if (page < 0 || pageSize <= 0)
+        {
+            return new List<Event>();
+        }
+
+        return await _context.Events
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
     public async Task<List<Event>> GetFilteredPagedEventsAsync(
         int pageIndex,
         int pageSize,
@@ -45,6 +58,23 @@ public class EventRepository : IEventRepository
             .ToListAsync();
     }
 
+    public async Task<int> GetFilteredCountAsync(string? title, EventCategory? category)
+    {
+        var query = _context.Events.AsQueryable();
+
+        if (!string.IsNullOrEmpty(title))
+        {
+            query = query.Where(e => e.Title.Contains(title));
+        }
+
+        if (category.HasValue)
+        {
+            query = query.Where(e => e.Category == category);
+        }
+
+        return await query.CountAsync();
+    }
+
     public async Task<int> GetCountAsync()
     {
         return await _context.Events.CountAsync(e => !e.IsDeleted);
@@ -53,28 +83,6 @@ public class EventRepository : IEventRepository
     public async Task<bool> ExistsAsync(Guid eventId)
     {
         return await _context.Events.AnyAsync(e => e.EventId == eventId);
-    }
-
-    public async Task SoftDeleteAsync(Guid eventId)
-    {
-        var eventEntity = await _context.Events.FindAsync(eventId);
-        if (eventEntity == null)
-        {
-            throw new InvalidOperationException("Event not found");
-        }
-        eventEntity.IsDeleted = true;
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task RestoreAsync(Guid eventId)
-    {
-        var eventEntity = await _context.Events.FindAsync(eventId);
-        if (eventEntity == null)
-        {
-            throw new InvalidOperationException("Event not found");
-        }
-        eventEntity.IsDeleted = false;
-        await _context.SaveChangesAsync();
     }
 
     public async Task<Event?> GetByIdAsync(Guid id)

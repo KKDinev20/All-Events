@@ -26,17 +26,17 @@ namespace AllEvents.TicketManagement.App.Pages.Events
         {
             SelectedTitle = title ?? string.Empty;
             SelectedCategory = category;
-            SortBy = sortBy;
+            SortBy = sortBy ?? "EventDate";
             Ascending = ascending;
 
-            var totalEvents = await _eventRepository.GetCountAsync();
-            Events = await _eventRepository.GetFilteredPagedEventsAsync(pageNumber - 1, pageSize, title, category, sortBy, ascending);
+            var totalEvents = await _eventRepository.GetFilteredCountAsync(title, category);
+            Events = await _eventRepository.GetFilteredPagedEventsAsync(pageNumber, pageSize, title, category, sortBy, ascending);
             CurrentPage = pageNumber;
             PageSize = pageSize;
             TotalPages = (int)System.Math.Ceiling((double)totalEvents / pageSize);
 
-            // Populate categories for dropdown
             Categories = Enum.GetValues(typeof(EventCategory)).Cast<EventCategory>().ToList();
         }
     }
+
 }
