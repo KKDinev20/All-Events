@@ -27,7 +27,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             _context = serviceProvider.GetService<IAllEventsDbContext>();
             _mediator = serviceProvider.GetService<IMediator>();
 
-            SeedDatabase().GetAwaiter().GetResult(); 
+            SeedDatabase().GetAwaiter().GetResult();
         }
 
         private async Task SeedDatabase()
@@ -59,7 +59,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             };
 
             _context.Events.AddRange(events);
-            await _context.SaveChangesAsync(default); 
+            await _context.SaveChangesAsync(default);
         }
 
         [Fact]

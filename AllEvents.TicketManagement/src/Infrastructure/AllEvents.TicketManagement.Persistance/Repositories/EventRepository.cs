@@ -1,4 +1,5 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Features.Events.Queries;
 using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,11 @@ public class EventRepository : IEventRepository
     public EventRepository(AllEventsDbContext context)
     {
         _context = context;
+    }
+
+    public IEventQuery GetEvents()
+    {
+        return new EventQuery(_context.Events.AsQueryable());
     }
 
     public async Task<List<Event>> GetPagedEventsAsync(int page, int pageSize)
@@ -33,43 +39,38 @@ public class EventRepository : IEventRepository
         string? sortBy,
         bool ascending)
     {
-        IQueryable<Event> query = _context.Events;
+        var query = GetEvents();
 
         if (!string.IsNullOrEmpty(title))
         {
-            query = query.Where(e => e.Title.Contains(title));
+            query = query.Search(title);
         }
 
         if (category.HasValue)
         {
-            query = query.Where(e => e.Category == category.Value);
+            query = query.ForCategory(category.Value);
         }
 
         if (!string.IsNullOrEmpty(sortBy))
         {
-            query = ascending
-                ? query.OrderBy(e => EF.Property<object>(e, sortBy))
-                : query.OrderByDescending(e => EF.Property<object>(e, sortBy));
+            query = query.SortBy(sortBy, ascending);
         }
 
-        return await query
-            .Skip(pageIndex * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+        return await query.ToListAsync(pageIndex, pageSize);
     }
 
     public async Task<int> GetFilteredCountAsync(string? title, EventCategory? category)
     {
-        var query = _context.Events.AsQueryable();
+        var query = GetEvents();
 
         if (!string.IsNullOrEmpty(title))
         {
-            query = query.Where(e => e.Title.Contains(title));
+            query = query.Search(title);
         }
 
         if (category.HasValue)
         {
-            query = query.Where(e => e.Category == category);
+            query = query.ForCategory(category.Value);
         }
 
         return await query.CountAsync();
@@ -89,5 +90,4 @@ public class EventRepository : IEventRepository
     {
         return await _context.Events.FindAsync(id);
     }
-
 }
