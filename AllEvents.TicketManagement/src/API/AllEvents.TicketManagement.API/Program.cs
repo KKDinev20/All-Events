@@ -1,12 +1,12 @@
 
 using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using AllEvents.TicketManagement.Application.Features.Events.Handlers;
 using AllEvents.TicketManagement.Persistance;
 using AllEvents.TicketManagement.Persistance.Repositories;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AllEvents.TicketManagement.API
 {
@@ -25,6 +25,10 @@ namespace AllEvents.TicketManagement.API
 
             builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
 
+            builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);
+            builder.Services.AddMediatR(typeof(UpdateEventCommandHandler).Assembly);
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateEventCommandValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UpdateEventCommandValidator>();
 
             builder.Services.AddCors(options =>
             {
@@ -45,6 +49,7 @@ namespace AllEvents.TicketManagement.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
 
             builder.Configuration.Bind("Security", new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Security"));
 

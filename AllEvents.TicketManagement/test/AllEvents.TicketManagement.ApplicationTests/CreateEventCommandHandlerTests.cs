@@ -1,16 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Application.Features.Events.Commands;
-using AllEvents.TicketManagement.Application.Features.Events.Handlers;
 using AllEvents.TicketManagement.Domain.Entities;
 using FluentAssertions;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Xunit;
 
 namespace AllEvents.TicketManagement.Tests
 {
