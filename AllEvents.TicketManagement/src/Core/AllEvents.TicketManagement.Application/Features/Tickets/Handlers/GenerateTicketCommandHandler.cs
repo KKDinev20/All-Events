@@ -44,7 +44,9 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
 
             var ticketId = Guid.NewGuid();
             var encryptedData = EncryptData($"{ticketId}:{request.PersonName}");
-            var qrCodeImage = GenerateQRCodeImage(encryptedData);
+            var appBaseUrl = "https://localhost:7273";
+            var qrCodeUrl = $"{appBaseUrl}/api/ticket/validate?token={Convert.ToBase64String(encryptedData)}";
+            var qrCodeImage = GenerateQRCodeImage(qrCodeUrl);
 
             var ticket = new Ticket(
                 ticketId: ticketId,
@@ -86,13 +88,11 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
             }
         }
 
-
-        private byte[] GenerateQRCodeImage(byte[] encryptedData)
+        private byte[] GenerateQRCodeImage(string qrCodeUrl)
         {
-            var encryptedString = Convert.ToBase64String(encryptedData);
             using (var qrGenerator = new QRCodeGenerator())
             {
-                var qrCodeData = qrGenerator.CreateQrCode(encryptedString, QRCodeGenerator.ECCLevel.Q);
+                var qrCodeData = qrGenerator.CreateQrCode(qrCodeUrl, QRCodeGenerator.ECCLevel.Q);
                 using (QRCode qrCode = new QRCode(qrCodeData))
                 {
                     using (var qrCodeImage = qrCode.GetGraphic(20))
@@ -106,5 +106,6 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
                 }
             }
         }
+
     }
 }

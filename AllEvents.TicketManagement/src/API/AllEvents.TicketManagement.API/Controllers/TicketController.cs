@@ -22,5 +22,18 @@ namespace AllEvents.TicketManagement.API.Controllers
             var ticket = await mediator.Send(command);
             return Ok(ticket);
         }
+
+        [HttpGet("validate")]
+        public async Task<IActionResult> Validate([FromQuery] string token)
+        {
+            var command = new ValidateTicketCommand { Token = token };
+            var result = await mediator.Send(command);
+
+            if (result.IsSuccessful)
+            {
+                return Ok(result.Message);
+            }
+            return BadRequest(result.Message);
+        }
     }
 }
