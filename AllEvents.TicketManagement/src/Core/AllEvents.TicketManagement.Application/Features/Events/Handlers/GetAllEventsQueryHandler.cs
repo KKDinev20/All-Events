@@ -7,16 +7,16 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
 {
     public class GetAllEventsQueryHandler : IRequestHandler<GetAllEventsQuery, PagedResult<EventModel>>
     {
-        private readonly IAllEventsDbContext _dbContext;
+        private readonly IEventQuery _eventQuery;
 
-        public GetAllEventsQueryHandler(IAllEventsDbContext dbContext)
+        public GetAllEventsQueryHandler(IEventQuery eventQuery)
         {
-            _dbContext = dbContext;
+            _eventQuery = eventQuery;
         }
 
         public async Task<PagedResult<EventModel>> Handle(GetAllEventsQuery request, CancellationToken cancellationToken)
         {
-            var query = new EventQuery(_dbContext.Events);
+            var query = _eventQuery.ExcludeDeleted();
 
             if (!string.IsNullOrEmpty(request.Title))
             {
@@ -33,7 +33,8 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
                 query.SortBy(request.SortBy, request.Ascending);
             }
 
-            var events = await query.ToListAsync(request.Page, request.PageSize);
+            var events = await query.ToListAsync(request.Page - 1, request.PageSize); 
+
             var totalCount = await query.CountAsync();
 
             var items = events.Select(e => new EventModel

@@ -39,6 +39,12 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Queries
             return this;
         }
 
+        public IEventQuery ExcludeDeleted()
+        {
+            _query = _query.Where(e => !e.IsDeleted);
+            return this;
+        }
+
         public async Task<List<Event>> ToListAsync(int pageIndex, int pageSize)
         {
             return await _query
