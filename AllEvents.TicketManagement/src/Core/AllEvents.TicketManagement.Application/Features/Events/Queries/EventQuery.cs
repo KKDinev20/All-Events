@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllEvents.TicketManagement.Application.Features.Events.Queries
 {
-    public class EventQuery: IEventQuery
+    public class EventQuery : IEventQuery
     {
         private IQueryable<Event> _query;
 

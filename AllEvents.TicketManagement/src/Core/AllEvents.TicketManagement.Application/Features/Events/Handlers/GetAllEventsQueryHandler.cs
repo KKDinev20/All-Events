@@ -7,24 +7,34 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
 {
     public class GetAllEventsQueryHandler : IRequestHandler<GetAllEventsQuery, PagedResult<EventModel>>
     {
-        private readonly IEventRepository eventRepository;
+        private readonly IAllEventsDbContext _dbContext;
 
-        public GetAllEventsQueryHandler(IEventRepository eventRepository)
+        public GetAllEventsQueryHandler(IAllEventsDbContext dbContext)
         {
-            this.eventRepository = eventRepository;
+            _dbContext = dbContext;
         }
 
         public async Task<PagedResult<EventModel>> Handle(GetAllEventsQuery request, CancellationToken cancellationToken)
         {
-            var totalCount = await eventRepository.GetCountAsync();
+            var query = new EventQuery(_dbContext.Events);
 
-            var events = await eventRepository.GetFilteredPagedEventsAsync(
-                request.Page,
-                request.PageSize,
-                request.Title,
-                request.Category,
-                request.SortBy,
-                request.Ascending);
+            if (!string.IsNullOrEmpty(request.Title))
+            {
+                query.Search(request.Title);
+            }
+
+            if (request.Category.HasValue)
+            {
+                query.ForCategory(request.Category.Value);
+            }
+
+            if (!string.IsNullOrEmpty(request.SortBy))
+            {
+                query.SortBy(request.SortBy, request.Ascending);
+            }
+
+            var events = await query.ToListAsync(request.Page, request.PageSize);
+            var totalCount = await query.CountAsync();
 
             var items = events.Select(e => new EventModel
             {

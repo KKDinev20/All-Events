@@ -5,24 +5,34 @@ using MediatR;
 
 public class GetFilteredEventsQueryHandler : IRequestHandler<GetFilteredEventsQuery, PagedResult<EventModel>>
 {
-    private readonly IEventRepository _eventRepository;
+    private readonly IAllEventsDbContext _dbContext;
 
-    public GetFilteredEventsQueryHandler(IEventRepository eventRepository)
+    public GetFilteredEventsQueryHandler(IAllEventsDbContext dbContext)
     {
-        _eventRepository = eventRepository;
+        _dbContext = dbContext;
     }
 
     public async Task<PagedResult<EventModel>> Handle(GetFilteredEventsQuery request, CancellationToken cancellationToken)
     {
-        var events = await _eventRepository.GetFilteredPagedEventsAsync(
-            request.PageIndex,
-            request.PageSize,
-            request.Title,
-            request.Category,
-            request.SortBy,
-            request.Ascending);
+        var query = new EventQuery(_dbContext.Events);
 
-        var totalEvents = await _eventRepository.GetCountAsync();
+        if (!string.IsNullOrEmpty(request.Title))
+        {
+            query.Search(request.Title);
+        }
+
+        if (request.Category.HasValue)
+        {
+            query.ForCategory(request.Category.Value);
+        }
+
+        if (!string.IsNullOrEmpty(request.SortBy))
+        {
+            query.SortBy(request.SortBy, request.Ascending);
+        }
+
+        var events = await query.ToListAsync(request.PageIndex, request.PageSize);
+        var totalEvents = await query.CountAsync();
 
         var eventModels = events.Select(e => new EventModel
         {
