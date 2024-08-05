@@ -39,10 +39,10 @@ namespace AllEvents.TicketManagement.ApplicationTests
             // Arrange
             var mockTicketRepository = new Mock<ITicketRepository>();
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-    {
-        { "Security:AES_Key", "AllEvents2024891" },
-        { "Security:AES_IV", "E1F5D1A2C9B81234" }
-    }).Build();
+            {
+                { "Security:AES_Key", "AllEvents2024891" },
+                { "Security:AES_IV", "E1F5D1A2C9B81234" }
+            }).Build();
 
             var aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
             var aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
@@ -75,10 +75,10 @@ namespace AllEvents.TicketManagement.ApplicationTests
             // Arrange
             var mockTicketRepository = new Mock<ITicketRepository>();
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-    {
-        { "Security:AES_Key", "AllEvents2024891" },
-        { "Security:AES_IV", "E1F5D1A2C9B81234" }
-    }).Build();
+            {
+                { "Security:AES_Key", "AllEvents2024891" },
+                { "Security:AES_IV", "E1F5D1A2C9B81234" }
+            }).Build();
 
             var aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
             var aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
@@ -107,10 +107,10 @@ namespace AllEvents.TicketManagement.ApplicationTests
             // Arrange
             var mockTicketRepository = new Mock<ITicketRepository>();
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-    {
-        { "Security:AES_Key", "AllEvents2024891" },
-        { "Security:AES_IV", "E1F5D1A2C9B81234" }
-    }).Build();
+            {
+                { "Security:AES_Key", "AllEvents2024891" },
+                { "Security:AES_IV", "E1F5D1A2C9B81234" }
+            }).Build();
 
             var aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
             var aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
@@ -153,5 +153,39 @@ namespace AllEvents.TicketManagement.ApplicationTests
             Assert.False(result.IsSuccessful);
             Assert.Equal("Invalid Token", result.Message);
         }
+
+        [Fact]
+        public async Task ValidateTicketCommand_Should_Return_False_For_Valid_Token()
+        {
+            var mockTicketRepository = new Mock<ITicketRepository>();
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "Security:AES_Key", "AllEvents2024891" },
+                { "Security:AES_IV", "E1F5D1A2C9B81234" }
+            }).Build();
+
+            var aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
+            var aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
+
+            var validTicketId = Guid.NewGuid();
+            var validPersonName = "Valid Person";
+
+            var encryptedData = EncryptData($"{validTicketId}:{validPersonName}", aesKey, aesIV);
+            var token = Convert.ToBase64String(encryptedData);
+
+            var ticket = new Ticket(validTicketId, validPersonName, "Event Title", new byte[0], Guid.NewGuid());
+
+            mockTicketRepository.Setup(repo => repo.GetByIdAsync(validTicketId)).ReturnsAsync(ticket);
+
+            var handler = new ValidateTicketCommandHandler(configuration, mockTicketRepository.Object);
+
+            // Act
+            var result = await handler.Handle(new ValidateTicketCommand { Token = token }, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccessful);
+            Assert.Equal("Validation Success", result.Message);
+        }
+
     }
 }
