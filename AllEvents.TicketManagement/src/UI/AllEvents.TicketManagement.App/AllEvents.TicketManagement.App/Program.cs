@@ -28,6 +28,12 @@ namespace AllEvents.TicketManagement.App
 
             builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetRequiredService<AllEventsDbContext>());
             builder.Services.AddScoped<ReadEventsServiceReader>();
+            builder.Services.AddScoped<IEventQuery, EventQuery>(provider =>
+            {
+                var dbContext = provider.GetRequiredService<IAllEventsDbContext>();
+                return new EventQuery(dbContext.Events.AsQueryable());
+            });
+
 
             builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);
             builder.Services.AddMediatR(typeof(UpdateEventCommandHandler).Assembly);
