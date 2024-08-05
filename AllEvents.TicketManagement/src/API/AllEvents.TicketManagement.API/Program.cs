@@ -24,6 +24,12 @@ namespace AllEvents.TicketManagement.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.AddScoped<IEventQuery, EventQuery>(provider =>
+            {
+                var dbContext = provider.GetRequiredService<IAllEventsDbContext>();
+                return new EventQuery(dbContext.Events.AsQueryable());
+            });
+
             builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
 
             builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);

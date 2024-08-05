@@ -9,5 +9,8 @@ namespace AllEvents.TicketManagement.Application.Models
         public string Location { get; set; } = null!;
         public decimal Price { get; set; }
         public EventCategory Category { get; set; }
+
+        public DateTime EventDate { get; set; }
+
     }
 }

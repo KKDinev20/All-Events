@@ -1,14 +1,10 @@
-﻿using MediatR;
+﻿using AllEvents.TicketManagement.Application.Models;
+using MediatR;
 
 namespace AllEvents.TicketManagement.Application.Features.Tickets.Commands
 {
-    public class ValidateTicketCommand : IRequest<string>
+    public class ValidateTicketCommand : IRequest<ValidationResult>
     {
-        public string Token { get; }
-
-        public ValidateTicketCommand(string token)
-        {
-            Token = token;
-        }
+        public string Token { get; set; }
     }
 }
