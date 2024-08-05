@@ -34,6 +34,7 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
             }
 
             var events = await query.ToListAsync(request.Page - 1, request.PageSize);
+
             var totalCount = await query.CountAsync();
 
             var items = events.Select(e => new EventModel
