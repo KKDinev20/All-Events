@@ -155,7 +155,7 @@ namespace AllEvents.TicketManagement.ApplicationTests
         }
 
         [Fact]
-        public async Task ValidateTicketCommand_Should_Return_False_For_Valid_Token()
+        public async Task ValidateTicketCommand_Should_Return_True_For_Valid_Token()
         {
             var mockTicketRepository = new Mock<ITicketRepository>();
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
