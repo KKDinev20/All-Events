@@ -2,6 +2,7 @@
 using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using AllEvents.TicketManagement.Application.Features.Events.Handlers;
+using AllEvents.TicketManagement.Application.Features.Events.Queries;
 using AllEvents.TicketManagement.Persistance;
 using AllEvents.TicketManagement.Persistance.Repositories;
 using FluentValidation;
@@ -21,6 +22,12 @@ namespace AllEvents.TicketManagement.API
             builder.Services.AddDbContext<AllEventsDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            builder.Services.AddScoped<IEventQuery, EventQuery>(provider =>
+            {
+                var dbContext = provider.GetRequiredService<IAllEventsDbContext>();
+                return new EventQuery(dbContext.Events.AsQueryable());
             });
 
             builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
