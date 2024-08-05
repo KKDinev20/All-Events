@@ -33,12 +33,7 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
                 query.SortBy(request.SortBy, request.Ascending);
             }
 
-<<<<<<< HEAD
             var events = await query.ToListAsync(request.Page - 1, request.PageSize);
-=======
-            var events = await query.ToListAsync(request.Page - 1, request.PageSize); 
-
->>>>>>> e801c393e72e865b37ee0cf68ae4a76a691cd20f
             var totalCount = await query.CountAsync();
 
             var items = events.Select(e => new EventModel
