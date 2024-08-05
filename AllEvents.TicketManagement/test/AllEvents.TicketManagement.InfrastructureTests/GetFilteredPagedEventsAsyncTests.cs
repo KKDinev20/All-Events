@@ -29,7 +29,6 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             await context.SaveChangesAsync();
             return context;
         }
-
         private IEventQuery MockEventQuery(AllEventsDbContext context)
         {
             var eventQueryMock = new Mock<IEventQuery>();
@@ -60,7 +59,26 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         }
 
         [Fact]
-        public async Task GetFilteredPagedEventsAsync_ShouldFilterByTitle()
+        public async Task GetFilteredPagedEventsAsyncShouldReturnExpectedResults_WhenValidationOK()
+        {
+            // Arrange
+            var context = await GetDbContext();
+            var eventQuery = MockEventQuery(context);
+            var handler = new GetAllEventsQueryHandler(eventQuery);
+
+            // Act
+            var query = new GetAllEventsQuery(1, 10, null, null, null, true);
+            var result = await handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(3, result.Items.Count);
+            Assert.Contains(result.Items, e => e.Title == "Event 1");
+            Assert.Contains(result.Items, e => e.Title == "Event 2");
+            Assert.Contains(result.Items, e => e.Title == "Event 3");
+        }
+
+        [Fact]
+        public async Task GetFilteredPagedEventsAsyncShouldFilterByTitle()
         {
             var context = await GetDbContext();
             var eventQuery = MockEventQuery(context);
@@ -74,7 +92,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         }
 
         [Fact]
-        public async Task GetFilteredPagedEventsAsync_ShouldFilterByCategory()
+        public async Task GetFilteredPagedEventsAsyncShouldFilterByCategory()
         {
             var context = await GetDbContext();
             var eventQuery = MockEventQuery(context);
@@ -102,7 +120,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         }
 
         [Fact]
-        public async Task GetFilteredPagedEventsAsync_ShouldSortByPrice()
+        public async Task GetFilteredPagedEventsAsyncShouldSortByPrice()
         {
             var context = await GetDbContext();
             var eventQuery = MockEventQuery(context);
