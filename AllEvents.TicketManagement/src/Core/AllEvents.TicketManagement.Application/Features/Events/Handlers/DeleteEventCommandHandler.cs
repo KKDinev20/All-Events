@@ -1,31 +1,35 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Extensions;
 using AllEvents.TicketManagement.Application.Features.Events.Commands.DeleteEvent;
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
 
-namespace AllEvents.TicketManagement.Application.Features.Events.Handlers
+public class DeleteEventCommandHandler : IRequestHandler<DeleteEventCommand, bool>
 {
-    public class DeleteEventCommandHandler : IRequestHandler<DeleteEventCommand, bool>
+    private readonly IAllEventsDbContext _context;
+    private readonly IDistributedCache _cache;
+    private const string CacheKeyPrefix = "Event";
+
+    public DeleteEventCommandHandler(IAllEventsDbContext context, IDistributedCache cache)
     {
-        private readonly IAllEventsDbContext _context;
+        _context = context;
+        _cache = cache;
+    }
 
-        public DeleteEventCommandHandler(IAllEventsDbContext context)
+    public async Task<bool> Handle(DeleteEventCommand request, CancellationToken cancellationToken)
+    {
+        var @event = await _context.Events.FindAsync(request.EventId);
+
+        if (@event == null || @event.IsDeleted)
         {
-            _context = context;
+            return false;
         }
 
-        public async Task<bool> Handle(DeleteEventCommand request, CancellationToken cancellationToken)
-        {
-            var @event = await _context.Events.FindAsync(request.EventId);
+        @event.Delete();
+        await _context.SaveChangesAsync(cancellationToken);
 
-            if (@event == null || @event.IsDeleted)
-            {
-                return false;
-            }
+        await _cache.InvalidateCacheAsync(CacheKeyPrefix);
 
-            @event.Delete();
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return true;
-        }
+        return true;
     }
 }

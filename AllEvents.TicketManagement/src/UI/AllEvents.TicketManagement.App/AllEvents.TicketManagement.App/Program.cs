@@ -34,6 +34,12 @@ namespace AllEvents.TicketManagement.App
                 return new EventQuery(dbContext.Events.AsQueryable());
             });
 
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+                options.InstanceName = "AllEvents:";
+            });
+
 
             builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);
             builder.Services.AddMediatR(typeof(UpdateEventCommandHandler).Assembly);

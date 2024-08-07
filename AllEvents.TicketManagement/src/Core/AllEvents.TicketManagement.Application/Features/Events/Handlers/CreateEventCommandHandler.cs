@@ -1,39 +1,41 @@
-﻿using MediatR;
-using AllEvents.TicketManagement.Application.Contracts;
+﻿using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Extensions;
+using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using AllEvents.TicketManagement.Domain.Entities;
-using System.Threading;
-using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
 
-namespace AllEvents.TicketManagement.Application.Features.Events.Commands
+public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand>
 {
-    public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand>
+    private readonly IAllEventsDbContext _context;
+    private readonly IDistributedCache _cache;
+    private const string CacheKeyPrefix = "Event";
+
+    public CreateEventCommandHandler(IAllEventsDbContext context, IDistributedCache cache)
     {
-        private readonly IAllEventsDbContext _context;
+        _context = context;
+        _cache = cache;
+    }
 
-        public CreateEventCommandHandler(IAllEventsDbContext context)
+    public async Task<Unit> Handle(CreateEventCommand request, CancellationToken cancellationToken)
+    {
+        var newEvent = new Event
         {
-            _context = context;
-        }
+            EventId = Guid.NewGuid(),
+            Title = request.Title,
+            Location = request.Location,
+            Price = request.Price,
+            Category = request.Category,
+            EventDate = request.EventDate,
+            NrOfTickets = request.NrOfTickets,
+            IsDeleted = false
+        };
 
-        public async Task<Unit> Handle(CreateEventCommand request, CancellationToken cancellationToken)
-        {
+        _context.Events.Add(newEvent);
+        await _context.SaveChangesAsync(cancellationToken);
 
-            var newEvent = new Event
-            {
-                EventId = Guid.NewGuid(),
-                Title = request.Title,
-                Location = request.Location,
-                Price = request.Price,
-                Category = request.Category,
-                EventDate = request.EventDate,
-                NrOfTickets = request.NrOfTickets,
-                IsDeleted = false 
-            };
+        await _cache.InvalidateCacheAsync(CacheKeyPrefix);
 
-            _context.Events.Add(newEvent);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return Unit.Value;
-        }
+        return Unit.Value;
     }
 }
