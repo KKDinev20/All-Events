@@ -5,6 +5,7 @@ using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 
 namespace AllEvents.TicketManagement.Tests
@@ -13,6 +14,7 @@ namespace AllEvents.TicketManagement.Tests
     {
         private readonly Mock<IAllEventsDbContext> _mockDbContext;
         private readonly Mock<IValidator<UpdateEventCommand>> _mockValidator;
+        private readonly Mock<IDistributedCache> _mockCache; 
         private readonly UpdateEventCommandHandler _handler;
         private readonly List<Event> _events;
 
@@ -20,6 +22,7 @@ namespace AllEvents.TicketManagement.Tests
         {
             _mockDbContext = new Mock<IAllEventsDbContext>();
             _mockValidator = new Mock<IValidator<UpdateEventCommand>>();
+            _mockCache = new Mock<IDistributedCache>(); 
 
             _events = new List<Event>
             {
@@ -43,7 +46,7 @@ namespace AllEvents.TicketManagement.Tests
 
             _mockDbContext.Setup(db => db.Events).Returns(mockEventDbSet.Object);
 
-            _handler = new UpdateEventCommandHandler(_mockDbContext.Object, _mockValidator.Object);
+            _handler = new UpdateEventCommandHandler(_mockDbContext.Object, _mockCache.Object, _mockValidator.Object);
         }
 
         [Fact]
@@ -142,10 +145,8 @@ namespace AllEvents.TicketManagement.Tests
             await act.Should().ThrowAsync<ValidationException>().WithMessage("Validation failed: \n -- Price: Price must be a positive value. Severity: Error");
         }
 
-
         [Fact]
         public async Task Handle_ShouldThrowValidationException_WhenCommandIsInvalid()
-
         {
             // Arrange
             var existingEvent = _events[0];
@@ -175,7 +176,5 @@ namespace AllEvents.TicketManagement.Tests
             // Assert
             await act.Should().ThrowAsync<ValidationException>().WithMessage("Validation failed: \n -- Title: Title is required Severity: Error");
         }
-
-
     }
 }
