@@ -1,11 +1,12 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Application.Features.Events.Commands.DeleteEvent;
-using AllEvents.TicketManagement.Application.Features.Events.Handlers;
 using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 
 namespace AllEvents.TicketManagement.InfrastructureTests
 {
@@ -13,6 +14,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
     {
         private readonly IMediator _mediator;
         private readonly IAllEventsDbContext _context;
+        private readonly Mock<IDistributedCache> _mockCache;
 
         public DeleteEventsCommandHandlerTests()
         {
@@ -22,6 +24,9 @@ namespace AllEvents.TicketManagement.InfrastructureTests
 
             services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
             services.AddMediatR(typeof(DeleteEventCommandHandler).Assembly);
+
+            _mockCache = new Mock<IDistributedCache>();
+            services.AddSingleton(_mockCache.Object);
 
             var serviceProvider = services.BuildServiceProvider();
             _context = serviceProvider.GetService<IAllEventsDbContext>();

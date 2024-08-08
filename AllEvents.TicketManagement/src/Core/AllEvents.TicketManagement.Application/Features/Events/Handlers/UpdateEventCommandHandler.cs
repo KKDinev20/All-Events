@@ -1,17 +1,22 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Extensions;
 using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand>
 {
     private readonly IAllEventsDbContext _dbContext;
+    private readonly IDistributedCache _cache;
     private readonly IValidator<UpdateEventCommand> _validator;
+    private const string CacheKeyPrefix = "Event";
 
-    public UpdateEventCommandHandler(IAllEventsDbContext dbContext, IValidator<UpdateEventCommand> validator)
+    public UpdateEventCommandHandler(IAllEventsDbContext dbContext, IDistributedCache cache, IValidator<UpdateEventCommand> validator)
     {
         _dbContext = dbContext;
+        _cache = cache;
         _validator = validator;
     }
 
@@ -39,6 +44,8 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand>
         @event.NrOfTickets = request.NrOfTickets;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        await _cache.InvalidateCacheAsync(CacheKeyPrefix);
 
         return Unit.Value;
     }
