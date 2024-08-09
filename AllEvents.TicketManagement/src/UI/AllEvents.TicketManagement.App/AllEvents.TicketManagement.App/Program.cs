@@ -2,12 +2,14 @@ using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using AllEvents.TicketManagement.Application.Features.Events.Queries;
 using AllEvents.TicketManagement.Persistance;
+using AllEvents.TicketManagement.Persistance.Caching;
 using AllEvents.TicketManagement.Persistance.Repositories;
 using AllEvents.TicketManagement.Persistance.Seeding;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SqlServer.Management.Smo.Wmi;
 
 namespace AllEvents.TicketManagement.App
 {
@@ -17,8 +19,14 @@ namespace AllEvents.TicketManagement.App
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<AllEventsDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDbContext<AllEventsDbContext>((serviceProvider, options) =>
+            {
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                var threshold = TimeSpan.FromMilliseconds(20); 
+
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+                       .AddInterceptors(new QueryHandlerInterceptor(loggerFactory.CreateLogger<QueryHandlerInterceptor>(), threshold));
+            });
 
             builder.Services.AddScoped<IEventQuery, EventQuery>(provider =>
             {
@@ -63,12 +71,15 @@ namespace AllEvents.TicketManagement.App
                         .AllowAnyHeader()
                 );
             });
-
+            builder.Services.AddLogging(config =>
+            {
+                config.AddConsole(); 
+                config.AddDebug();   
+            });
             builder.Services.AddTransient<DataSeeder>();
 
             builder.Logging.ClearProviders();
-            builder.Logging.AddConsole();
-            builder.Logging.AddDebug();
+
 
             var app = builder.Build();
 

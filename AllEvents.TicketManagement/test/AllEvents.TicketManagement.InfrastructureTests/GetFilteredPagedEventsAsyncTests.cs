@@ -4,6 +4,7 @@ using AllEvents.TicketManagement.Application.Features.Events.Queries;
 using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace AllEvents.TicketManagement.InfrastructureTests
@@ -16,7 +17,10 @@ namespace AllEvents.TicketManagement.InfrastructureTests
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            var context = new AllEventsDbContext(options);
+            var loggerFactory = Mock.Of<ILoggerFactory>();
+
+
+            var context = new AllEventsDbContext(options, loggerFactory);
             context.Database.EnsureCreated();
 
             context.Events.AddRange(new List<Event>

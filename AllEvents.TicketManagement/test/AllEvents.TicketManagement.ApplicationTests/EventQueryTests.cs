@@ -2,12 +2,13 @@
 using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AllEvents.TicketManagement.ApplicationTests
 {
     public class EventQueryTests
     {
-        private DbContextOptions<AllEventsDbContext> _contextOptions;
+        private readonly DbContextOptions<AllEventsDbContext> _contextOptions;
 
         public EventQueryTests()
         {
@@ -20,16 +21,16 @@ namespace AllEvents.TicketManagement.ApplicationTests
 
         private void SeedDatabase()
         {
-            using var context = new AllEventsDbContext(_contextOptions);
+            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
             var events = new List<Event>
         {
-            new Event { Title = "Music Concert", Location = "A", Price=100, Category = EventCategory.Music },
-            new Event { Title = "Tech Conference", Location = "B", Price=50, Category = EventCategory.Other },
-            new Event {Title = "Art Exhibition", Location = "C", Price = 70, Category = EventCategory.Quiz},
-            new Event {Title = "Food Festival", Location = "D", Price = 90, Category = EventCategory.Festival},
+            new Event { Title = "Music Concert", Location = "A", Price = 100, Category = EventCategory.Music },
+            new Event { Title = "Tech Conference", Location = "B", Price = 50, Category = EventCategory.Other },
+            new Event { Title = "Art Exhibition", Location = "C", Price = 70, Category = EventCategory.Quiz },
+            new Event { Title = "Food Festival", Location = "D", Price = 90, Category = EventCategory.Festival }
         };
 
             context.Events.AddRange(events);
@@ -40,7 +41,7 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task Search_ShouldFilterByTitle()
         {
             // Arrange
-            using var context = new AllEventsDbContext(_contextOptions);
+            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
             var query = new EventQuery(context.Events.AsQueryable());
 
             // Act
@@ -55,7 +56,7 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task ForCategory_ShouldFilterByCategory()
         {
             // Arrange
-            using var context = new AllEventsDbContext(_contextOptions);
+            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
             var query = new EventQuery(context.Events.AsQueryable());
 
             // Act
@@ -70,7 +71,7 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task SortBy_ShouldSortByTitleAscending()
         {
             // Arrange
-            using var context = new AllEventsDbContext(_contextOptions);
+            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
             var query = new EventQuery(context.Events.AsQueryable());
 
             // Act
@@ -85,7 +86,7 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task SortBy_ShouldSortByTitleDescending()
         {
             // Arrange
-            using var context = new AllEventsDbContext(_contextOptions);
+            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
             var query = new EventQuery(context.Events.AsQueryable());
 
             // Act
@@ -100,7 +101,7 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task ToListAsync_ShouldReturnPagedResults()
         {
             // Arrange
-            using var context = new AllEventsDbContext(_contextOptions);
+            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
             var query = new EventQuery(context.Events.AsQueryable());
 
             // Act
@@ -115,7 +116,7 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task CountAsync_ShouldReturnTotalCount()
         {
             // Arrange
-            using var context = new AllEventsDbContext(_contextOptions);
+            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
             var query = new EventQuery(context.Events.AsQueryable());
 
             // Act
@@ -125,5 +126,6 @@ namespace AllEvents.TicketManagement.ApplicationTests
             Assert.Equal(4, count);
         }
     }
+
 
 }

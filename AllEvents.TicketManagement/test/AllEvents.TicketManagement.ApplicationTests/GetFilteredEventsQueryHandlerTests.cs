@@ -22,13 +22,15 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public GetFilteredEventsQueryHandlerTests()
         {
             var options = new DbContextOptionsBuilder<AllEventsDbContext>()
-                .UseInMemoryDatabase(databaseName: "AllEventsTestDb")
+                .UseInMemoryDatabase(databaseName: "AllEvents")
                 .Options;
 
-            _dbContext = new AllEventsDbContext(options);
+            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+            _dbContext = new AllEventsDbContext(options, loggerFactory);
             var cacheOptions = new MemoryDistributedCacheOptions();
             _cache = new MemoryDistributedCache(Options.Create(cacheOptions));
-            _logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<GetFilteredEventsQueryHandler>();
+            _logger = loggerFactory.CreateLogger<GetFilteredEventsQueryHandler>();
 
             SeedDatabase();
 
@@ -138,4 +140,5 @@ namespace AllEvents.TicketManagement.ApplicationTests
             Assert.Equal(2, result.TotalCount);
         }
     }
+
 }
