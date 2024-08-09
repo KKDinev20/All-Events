@@ -6,7 +6,12 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace AllEvents.TicketManagement.InfrastructureTests
 {
@@ -19,8 +24,13 @@ namespace AllEvents.TicketManagement.InfrastructureTests
         public DeleteEventsCommandHandlerTests()
         {
             var services = new ServiceCollection();
-            services.AddDbContext<AllEventsDbContext>(options =>
-                options.UseInMemoryDatabase(databaseName: "AllEvents"));
+
+            var loggerFactory = new LoggerFactory();
+            services.AddSingleton<ILoggerFactory>(loggerFactory);
+
+            services.AddDbContext<AllEventsDbContext>((provider, options) =>
+                options.UseInMemoryDatabase(databaseName: "AllEvents")
+                       .UseLoggerFactory(loggerFactory));
 
             services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
             services.AddMediatR(typeof(DeleteEventCommandHandler).Assembly);

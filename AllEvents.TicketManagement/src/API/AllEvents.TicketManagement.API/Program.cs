@@ -4,10 +4,12 @@ using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using AllEvents.TicketManagement.Application.Features.Events.Handlers;
 using AllEvents.TicketManagement.Application.Features.Events.Queries;
 using AllEvents.TicketManagement.Persistance;
+using AllEvents.TicketManagement.Persistance.Caching;
 using AllEvents.TicketManagement.Persistance.Repositories;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AllEvents.TicketManagement.API
 {
@@ -19,10 +21,15 @@ namespace AllEvents.TicketManagement.API
 
             // Add services to the container.
 
-            builder.Services.AddDbContext<AllEventsDbContext>(options =>
+            builder.Services.AddDbContext<AllEventsDbContext>((serviceProvider, options) =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                var threshold = TimeSpan.FromMilliseconds(20); 
+
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+                       .AddInterceptors(new QueryHandlerInterceptor(loggerFactory.CreateLogger<QueryHandlerInterceptor>(), threshold));
             });
+
 
             builder.Services.AddScoped<IEventQuery, EventQuery>(provider =>
             {
@@ -31,7 +38,7 @@ namespace AllEvents.TicketManagement.API
             });
 
             builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
-
+            builder.Services.AddLogging(configure => configure.AddConsole());
             builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);
             builder.Services.AddMediatR(typeof(UpdateEventCommandHandler).Assembly);
             builder.Services.AddValidatorsFromAssemblyContaining<CreateEventCommandValidator>();
@@ -60,6 +67,12 @@ namespace AllEvents.TicketManagement.API
             {
                 options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
                 options.InstanceName = "AllEvents:";
+            });
+
+            builder.Services.AddLogging(config =>
+            {
+                config.AddConsole(); 
+                config.AddDebug(); 
             });
 
             builder.Services.AddMediatR(typeof(GetAllEventsQueryHandler).Assembly);

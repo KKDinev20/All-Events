@@ -6,6 +6,7 @@ using AllEvents.TicketManagement.Persistance;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace AllEvents.TicketManagement.InfrastructureTests
 {
@@ -13,19 +14,25 @@ namespace AllEvents.TicketManagement.InfrastructureTests
     {
         private readonly IMediator _mediator;
         private readonly IAllEventsDbContext _context;
+        private readonly IServiceProvider _serviceProvider;
 
         public RestoreEventsCommandHandlerTests()
         {
             var services = new ServiceCollection();
-            services.AddDbContext<AllEventsDbContext>(options =>
-                options.UseInMemoryDatabase(databaseName: "AllEvents"));
+
+            var loggerFactory = new LoggerFactory();
+            services.AddSingleton<ILoggerFactory>(loggerFactory);
+
+            services.AddDbContext<AllEventsDbContext>((serviceProvider, options) =>
+                options.UseInMemoryDatabase(databaseName: "AllEvents")
+                       .UseLoggerFactory(loggerFactory));
 
             services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
             services.AddMediatR(typeof(RestoreEventCommandHandler).Assembly);
 
-            var serviceProvider = services.BuildServiceProvider();
-            _context = serviceProvider.GetService<IAllEventsDbContext>();
-            _mediator = serviceProvider.GetService<IMediator>();
+            _serviceProvider = services.BuildServiceProvider();
+            _context = _serviceProvider.GetService<IAllEventsDbContext>();
+            _mediator = _serviceProvider.GetService<IMediator>();
 
             SeedDatabase().GetAwaiter().GetResult();
         }
