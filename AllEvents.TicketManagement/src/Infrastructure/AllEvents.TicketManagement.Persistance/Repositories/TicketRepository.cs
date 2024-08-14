@@ -11,13 +11,11 @@ namespace AllEvents.TicketManagement.Persistance.Repositories
         {
             _DbContext = dbContext;
         }
-
         public async Task AddAsync(Ticket ticket)
         {
             await _DbContext.Tickets.AddAsync(ticket);
             await _DbContext.SaveChangesAsync();
         }
-
         public async Task<Ticket?> GetByIdAsync(Guid ticketID)
         {
             return await _DbContext.Tickets.FindAsync(ticketID);

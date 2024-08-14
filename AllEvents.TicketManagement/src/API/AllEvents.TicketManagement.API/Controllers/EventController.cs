@@ -33,9 +33,6 @@ namespace AllEvents.TicketManagement.API.Controllers
             return Ok(result);
         }
 
-
-
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {

@@ -1,12 +1,7 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Domain.Entities;
 using OfficeOpenXml;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.Persistance.Repositories
 {
