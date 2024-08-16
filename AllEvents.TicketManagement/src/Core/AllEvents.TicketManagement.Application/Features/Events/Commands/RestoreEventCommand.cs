@@ -6,5 +6,4 @@ namespace AllEvents.TicketManagement.Application.Features.Events.Commands
     {
         public Guid EventId { get; set; }
     }
-
 }

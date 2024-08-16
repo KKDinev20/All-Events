@@ -26,7 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\API\AllEvents.TicketManagement.API\AllEvents.TicketManagement.API.csproj" />
     <ProjectReference Include="..\..\..\Core\AllEvents.TicketManagement.Application\AllEvents.TicketManagement.Application.csproj" />
-    <ProjectReference Include="..\..\..\Infrastructure\AllEvents.TicketManagement.Persistance\AllEvents.TicketManagement.Persistance.csproj" />
+    <ProjectReference Include="..\..\..\Infrastructure\AllEvents.TicketManagement.Persistance\AllEvents.TicketManagement.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

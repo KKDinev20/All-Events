@@ -6,9 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace AllEvents.TicketManagement.ApplicationTests
 {
-    public class EventQueryTests
+    public class EventQueryTests : IClassFixture<EventQueryTests>, IDisposable
     {
         private readonly DbContextOptions<AllEventsDbContext> _contextOptions;
+        private readonly AllEventsDbContext _context;
+        private readonly EventQuery _query;
 
         public EventQueryTests()
         {
@@ -16,36 +18,34 @@ namespace AllEvents.TicketManagement.ApplicationTests
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
+            _context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
             SeedDatabase();
+
+            _query = new EventQuery(_context.Events.AsQueryable());
         }
 
         private void SeedDatabase()
         {
-            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            _context.Database.EnsureDeleted();
+            _context.Database.EnsureCreated();
 
             var events = new List<Event>
-        {
-            new Event { Title = "Music Concert", Location = "A", Price = 100, Category = EventCategory.Music },
-            new Event { Title = "Tech Conference", Location = "B", Price = 50, Category = EventCategory.Other },
-            new Event { Title = "Art Exhibition", Location = "C", Price = 70, Category = EventCategory.Quiz },
-            new Event { Title = "Food Festival", Location = "D", Price = 90, Category = EventCategory.Festival }
-        };
+            {
+                new Event { Title = "Music Concert", Location = "A", Price = 100, Category = EventCategory.Music },
+                new Event { Title = "Tech Conference", Location = "B", Price = 50, Category = EventCategory.Other },
+                new Event { Title = "Art Exhibition", Location = "C", Price = 70, Category = EventCategory.Quiz },
+                new Event { Title = "Food Festival", Location = "D", Price = 90, Category = EventCategory.Festival }
+            };
 
-            context.Events.AddRange(events);
-            context.SaveChanges();
+            _context.Events.AddRange(events);
+            _context.SaveChanges();
         }
 
         [Fact]
         public async Task Search_ShouldFilterByTitle()
         {
-            // Arrange
-            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
-            var query = new EventQuery(context.Events.AsQueryable());
-
             // Act
-            var result = await query.Search("Concert").ToListAsync(0, 10);
+            var result = await _query.Search("Concert").ToListAsync(0, 10);
 
             // Assert
             Assert.Single(result);
@@ -55,12 +55,8 @@ namespace AllEvents.TicketManagement.ApplicationTests
         [Fact]
         public async Task ForCategory_ShouldFilterByCategory()
         {
-            // Arrange
-            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
-            var query = new EventQuery(context.Events.AsQueryable());
-
             // Act
-            var result = await query.ForCategory(EventCategory.Other).ToListAsync(0, 10);
+            var result = await _query.ForCategory(EventCategory.Other).ToListAsync(0, 10);
 
             // Assert
             Assert.Single(result);
@@ -70,12 +66,8 @@ namespace AllEvents.TicketManagement.ApplicationTests
         [Fact]
         public async Task SortBy_ShouldSortByTitleAscending()
         {
-            // Arrange
-            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
-            var query = new EventQuery(context.Events.AsQueryable());
-
             // Act
-            var result = await query.SortBy("Title", true).ToListAsync(0, 10);
+            var result = await _query.SortBy("Title", true).ToListAsync(0, 10);
 
             // Assert
             Assert.Equal(4, result.Count);
@@ -85,12 +77,8 @@ namespace AllEvents.TicketManagement.ApplicationTests
         [Fact]
         public async Task SortBy_ShouldSortByTitleDescending()
         {
-            // Arrange
-            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
-            var query = new EventQuery(context.Events.AsQueryable());
-
             // Act
-            var result = await query.SortBy("Title", false).ToListAsync(0, 10);
+            var result = await _query.SortBy("Title", false).ToListAsync(0, 10);
 
             // Assert
             Assert.Equal(4, result.Count);
@@ -100,12 +88,8 @@ namespace AllEvents.TicketManagement.ApplicationTests
         [Fact]
         public async Task ToListAsync_ShouldReturnPagedResults()
         {
-            // Arrange
-            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
-            var query = new EventQuery(context.Events.AsQueryable());
-
             // Act
-            var result = await query.ToListAsync(1, 2);
+            var result = await _query.ToListAsync(1, 2);
 
             // Assert
             Assert.Equal(2, result.Count);
@@ -115,17 +99,16 @@ namespace AllEvents.TicketManagement.ApplicationTests
         [Fact]
         public async Task CountAsync_ShouldReturnTotalCount()
         {
-            // Arrange
-            using var context = new AllEventsDbContext(_contextOptions, LoggerFactory.Create(builder => builder.AddConsole()));
-            var query = new EventQuery(context.Events.AsQueryable());
-
             // Act
-            var count = await query.CountAsync();
+            var count = await _query.CountAsync();
 
             // Assert
             Assert.Equal(4, count);
         }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
+        }
     }
-
-
 }

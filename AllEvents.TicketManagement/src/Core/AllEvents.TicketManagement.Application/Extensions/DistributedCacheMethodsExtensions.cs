@@ -9,7 +9,7 @@ namespace AllEvents.TicketManagement.Application.Extensions
 
         public static async Task SetCacheAsync(this IDistributedCache cache, string key, object value, DistributedCacheEntryOptions options, string prefix)
         {
-            var cacheKey = $"{prefix}:{key}";
+            var cacheKey = GenerateCacheKey(prefix, key);
             var jsonData = JsonConvert.SerializeObject(value);
             await cache.SetStringAsync(cacheKey, jsonData, options);
 
@@ -18,14 +18,14 @@ namespace AllEvents.TicketManagement.Application.Extensions
 
         public static async Task<T?> GetCacheAsync<T>(this IDistributedCache cache, string key, string prefix)
         {
-            var cacheKey = $"{prefix}:{key}";
+            var cacheKey = GenerateCacheKey(prefix, key);
             var jsonData = await cache.GetStringAsync(cacheKey);
             return jsonData == null ? default : JsonConvert.DeserializeObject<T>(jsonData);
         }
 
         public static async Task RemoveCacheAsync(this IDistributedCache cache, string key, string prefix)
         {
-            var cacheKey = $"{prefix}:{key}";
+            var cacheKey = GenerateCacheKey(prefix, key);
             await cache.RemoveAsync(cacheKey);
             await RemoveKeyFromTrackingListAsync(cache, prefix, cacheKey);
         }
@@ -44,7 +44,7 @@ namespace AllEvents.TicketManagement.Application.Extensions
 
         private static async Task AddKeyToTrackingListAsync(IDistributedCache cache, string prefix, string cacheKey)
         {
-            var listKey = $"{KeyTrackingListPrefix}{prefix}";
+            var listKey = GenerateCacheKey(KeyTrackingListPrefix, prefix);
             var existingKeys = await cache.GetStringAsync(listKey) ?? string.Empty;
             var keys = existingKeys.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -57,7 +57,7 @@ namespace AllEvents.TicketManagement.Application.Extensions
 
         private static async Task RemoveKeyFromTrackingListAsync(IDistributedCache cache, string prefix, string cacheKey)
         {
-            var listKey = $"{KeyTrackingListPrefix}{prefix}";
+            var listKey = GenerateCacheKey(KeyTrackingListPrefix, prefix);
             var existingKeys = await cache.GetStringAsync(listKey) ?? string.Empty;
             var keys = existingKeys.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -75,6 +75,11 @@ namespace AllEvents.TicketManagement.Application.Extensions
             {
                 await cache.RemoveAsync(key);
             }
+        }
+
+        private static string GenerateCacheKey(string prefix, string key)
+        {
+            return $"{prefix}:{key}";
         }
     }
 }

@@ -22,8 +22,9 @@ namespace AllEvents.TicketManagement.Persistance.Caching
             InterceptionResult<DbDataReader> result,
             CancellationToken cancellationToken = default)
         {
-            return await ExecuteAndLogIfSlowAsync(command, async () =>
-                await base.ReaderExecutingAsync(command, eventData, result, cancellationToken));
+            return await ExecuteAndLogIfSlowAsync(
+                command,
+                async () => await base.ReaderExecutingAsync(command, eventData, result, cancellationToken));
         }
 
         public async Task<InterceptionResult<int>> NonQueryExecutingAsync(
@@ -32,8 +33,9 @@ namespace AllEvents.TicketManagement.Persistance.Caching
             InterceptionResult<int> result,
             CancellationToken cancellationToken = default)
         {
-            return await ExecuteAndLogIfSlowAsync(command, async () =>
-                await base.NonQueryExecutingAsync(command, eventData, result, cancellationToken));
+            return await ExecuteAndLogIfSlowAsync(
+                command,
+                async () => await base.NonQueryExecutingAsync(command, eventData, result, cancellationToken));
         }
 
         public async Task<InterceptionResult<object>> ScalarExecutingAsync(
@@ -42,16 +44,17 @@ namespace AllEvents.TicketManagement.Persistance.Caching
             InterceptionResult<object> result,
             CancellationToken cancellationToken = default)
         {
-            return await ExecuteAndLogIfSlowAsync(command, async () =>
-                await base.ScalarExecutingAsync(command, eventData, result, cancellationToken));
+            return await ExecuteAndLogIfSlowAsync(
+                command,
+                async () => await base.ScalarExecutingAsync(command, eventData, result, cancellationToken));
         }
 
         private async Task<T> ExecuteAndLogIfSlowAsync<T>(
             DbCommand command,
-            Func<Task<T>> execute)
+            Func<Task<T>> executeAsync)
         {
             var stopwatch = Stopwatch.StartNew();
-            var result = await execute();
+            var result = await executeAsync();
             stopwatch.Stop();
 
             LogIfSlow(command, stopwatch.Elapsed);

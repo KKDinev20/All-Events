@@ -1,5 +1,6 @@
 using AllEvents.TicketManagement.Domain.Entities;
 using AllEvents.TicketManagement.Persistance;
+using AllEvents.TicketManagement.Persistance.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

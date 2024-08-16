@@ -2,9 +2,7 @@
 
 namespace AllEvents.TicketManagement.Application.Contracts
 {
-    public interface ITicketRepository
+    public interface ITicketRepository : IRepository<Ticket>
     {
-        Task AddAsync(Ticket ticket);
-        Task<Ticket?> GetByIdAsync(Guid ticketID);
     }
 }

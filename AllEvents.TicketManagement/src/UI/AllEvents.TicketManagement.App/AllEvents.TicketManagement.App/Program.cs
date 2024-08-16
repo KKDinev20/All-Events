@@ -9,7 +9,6 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Management.Smo.Wmi;
 
 namespace AllEvents.TicketManagement.App
 {
@@ -19,15 +18,40 @@ namespace AllEvents.TicketManagement.App
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configuration
+            ConfigureServices(builder);
+
+            var app = builder.Build();
+
+            // Database Seeding
+            await SeedDatabase(app);
+
+            // Middleware Configuration
+            ConfigureMiddleware(app);
+
+            // Endpoint Mapping
+            ConfigureEndpoints(app);
+
+            app.Run();
+        }
+
+        private static void ConfigureServices(WebApplicationBuilder builder)
+        {
+            // Database Context and Interceptors
             builder.Services.AddDbContext<AllEventsDbContext>((serviceProvider, options) =>
             {
                 var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                var threshold = TimeSpan.FromMilliseconds(20); 
+                var threshold = TimeSpan.FromMilliseconds(20);
 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
                        .AddInterceptors(new QueryHandlerInterceptor(loggerFactory.CreateLogger<QueryHandlerInterceptor>(), threshold));
             });
 
+            // Identity Services
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<AllEventsDbContext>();
+
+            // Scoped Services
             builder.Services.AddScoped<IEventQuery, EventQuery>(provider =>
             {
                 var dbContext = provider.GetRequiredService<IAllEventsDbContext>();
@@ -36,32 +60,34 @@ namespace AllEvents.TicketManagement.App
 
             builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetRequiredService<AllEventsDbContext>());
             builder.Services.AddScoped<ReadEventsServiceReader>();
-            builder.Services.AddScoped<IEventQuery, EventQuery>(provider =>
-            {
-                var dbContext = provider.GetRequiredService<IAllEventsDbContext>();
-                return new EventQuery(dbContext.Events.AsQueryable());
-            });
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
+            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+            builder.Services.AddTransient<DataSeeder>();
 
+            // MediatR and Validators
+            builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);
+            builder.Services.AddMediatR(typeof(UpdateEventCommandHandler).Assembly);
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateEventCommandValidator>();
+            builder.Services.AddValidatorsFromAssemblyContaining<UpdateEventCommandValidator>();
+
+            // Caching
             builder.Services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
                 options.InstanceName = "AllEvents:";
             });
 
+            // Logging
+            builder.Services.AddLogging(config =>
+            {
+                config.AddConsole();
+                config.AddDebug();
+            });
 
-            builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);
-            builder.Services.AddMediatR(typeof(UpdateEventCommandHandler).Assembly);
-            builder.Services.AddValidatorsFromAssemblyContaining<CreateEventCommandValidator>();
-            builder.Services.AddValidatorsFromAssemblyContaining<UpdateEventCommandValidator>();
-
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<AllEventsDbContext>();
-
+            // Razor Pages
             builder.Services.AddRazorPages();
 
-            builder.Services.AddScoped<IEventRepository, EventRepository>();
-            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
-
+            // CORS
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
@@ -71,18 +97,10 @@ namespace AllEvents.TicketManagement.App
                         .AllowAnyHeader()
                 );
             });
-            builder.Services.AddLogging(config =>
-            {
-                config.AddConsole(); 
-                config.AddDebug();   
-            });
-            builder.Services.AddTransient<DataSeeder>();
+        }
 
-            builder.Logging.ClearProviders();
-
-
-            var app = builder.Build();
-
+        private static async Task SeedDatabase(WebApplication app)
+        {
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<AllEventsDbContext>();
@@ -95,23 +113,29 @@ namespace AllEvents.TicketManagement.App
 
                 await seeder.SeedAsync(filePath);
             }
+        }
 
+        private static void ConfigureMiddleware(WebApplication app)
+        {
             if (!app.Environment.IsDevelopment())
             {
+                // Production-specific middleware
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
 
+            // General Middleware
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
+        }
 
+        private static void ConfigureEndpoints(WebApplication app)
+        {
+            // Map Razor Pages
             app.MapRazorPages();
-
-            app.Run();
         }
     }
 }
