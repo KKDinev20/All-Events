@@ -9,14 +9,36 @@ using System.Text;
 
 namespace AllEvents.TicketManagement.ApplicationTests
 {
-    public class ValidateTicketCommandHandlerTests
+    public class ValidateTicketCommandHandlerTests : IDisposable
     {
-        private byte[] EncryptData(string plainText, byte[] aesKey, byte[] aesIV)
+        private readonly IConfiguration _configuration;
+        private readonly Mock<ITicketRepository> _mockTicketRepository;
+        private readonly ValidateTicketCommandHandler _handler;
+        private readonly byte[] _aesKey;
+        private readonly byte[] _aesIV;
+
+        public ValidateTicketCommandHandlerTests()
+        {
+            _configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "Security:AES_Key", "AllEvents2024891" },
+                { "Security:AES_IV", "E1F5D1A2C9B81234" }
+            }).Build();
+
+            _aesKey = Encoding.UTF8.GetBytes(_configuration["Security:AES_Key"]);
+            _aesIV = Encoding.UTF8.GetBytes(_configuration["Security:AES_IV"]);
+
+            _mockTicketRepository = new Mock<ITicketRepository>();
+
+            _handler = new ValidateTicketCommandHandler(_configuration, _mockTicketRepository.Object);
+        }
+
+        private byte[] EncryptData(string plainText)
         {
             using (Aes aes = Aes.Create())
             {
-                aes.Key = aesKey;
-                aes.IV = aesIV;
+                aes.Key = _aesKey;
+                aes.IV = _aesIV;
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
                 using (var ms = new MemoryStream())
@@ -37,64 +59,38 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task ValidateTicketCommand_Should_Fail_For_Invalid_Name()
         {
             // Arrange
-            var mockTicketRepository = new Mock<ITicketRepository>();
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "Security:AES_Key", "AllEvents2024891" },
-                { "Security:AES_IV", "E1F5D1A2C9B81234" }
-            }).Build();
-
-            var aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
-            var aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
-
             var validTicketId = Guid.NewGuid();
             var validPersonName = "Valid Person";
             var invalidPersonName = "Invalid Person";
 
-            var encryptedData = EncryptData($"{validTicketId}:{invalidPersonName}", aesKey, aesIV);
+            var encryptedData = EncryptData($"{validTicketId}:{invalidPersonName}");
             var token = Convert.ToBase64String(encryptedData);
 
             var ticket = new Ticket(validTicketId, validPersonName, "Event Title", new byte[0], Guid.NewGuid());
-
-            mockTicketRepository.Setup(repo => repo.GetByIdAsync(validTicketId)).ReturnsAsync(ticket);
-
-            var handler = new ValidateTicketCommandHandler(configuration, mockTicketRepository.Object);
+            _mockTicketRepository.Setup(repo => repo.GetByIdAsync(validTicketId)).ReturnsAsync(ticket);
 
             // Act
-            var result = await handler.Handle(new ValidateTicketCommand { Token = token }, CancellationToken.None);
+            var result = await _handler.Handle(new ValidateTicketCommand { Token = token }, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccessful);
             Assert.Equal("Validation Failed", result.Message);
         }
 
-
         [Fact]
         public async Task ValidateTicketCommand_Should_Fail_For_Invalid_GUID()
         {
             // Arrange
-            var mockTicketRepository = new Mock<ITicketRepository>();
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "Security:AES_Key", "AllEvents2024891" },
-                { "Security:AES_IV", "E1F5D1A2C9B81234" }
-            }).Build();
-
-            var aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
-            var aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
-
             var invalidTicketId = Guid.NewGuid();
             var validPersonName = "Valid Person";
 
-            var encryptedData = EncryptData($"{invalidTicketId}:{validPersonName}", aesKey, aesIV);
+            var encryptedData = EncryptData($"{invalidTicketId}:{validPersonName}");
             var token = Convert.ToBase64String(encryptedData);
 
-            mockTicketRepository.Setup(repo => repo.GetByIdAsync(invalidTicketId)).ReturnsAsync((Ticket)null);
-
-            var handler = new ValidateTicketCommandHandler(configuration, mockTicketRepository.Object);
+            _mockTicketRepository.Setup(repo => repo.GetByIdAsync(invalidTicketId)).ReturnsAsync((Ticket)null);
 
             // Act
-            var result = await handler.Handle(new ValidateTicketCommand { Token = token }, CancellationToken.None);
+            var result = await _handler.Handle(new ValidateTicketCommand { Token = token }, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccessful);
@@ -105,28 +101,16 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task ValidateTicketCommand_Should_Return_False_If_Ticket_Is_Null()
         {
             // Arrange
-            var mockTicketRepository = new Mock<ITicketRepository>();
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "Security:AES_Key", "AllEvents2024891" },
-                { "Security:AES_IV", "E1F5D1A2C9B81234" }
-            }).Build();
-
-            var aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
-            var aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
-
             var validTicketId = Guid.NewGuid();
             var validPersonName = "Valid Person";
 
-            var encryptedData = EncryptData($"{validTicketId}:{validPersonName}", aesKey, aesIV);
+            var encryptedData = EncryptData($"{validTicketId}:{validPersonName}");
             var token = Convert.ToBase64String(encryptedData);
 
-            mockTicketRepository.Setup(repo => repo.GetByIdAsync(validTicketId)).ReturnsAsync((Ticket)null);
-
-            var handler = new ValidateTicketCommandHandler(configuration, mockTicketRepository.Object);
+            _mockTicketRepository.Setup(repo => repo.GetByIdAsync(validTicketId)).ReturnsAsync((Ticket)null);
 
             // Act
-            var result = await handler.Handle(new ValidateTicketCommand { Token = token }, CancellationToken.None);
+            var result = await _handler.Handle(new ValidateTicketCommand { Token = token }, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccessful);
@@ -137,17 +121,8 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task ValidateTicketCommand_Should_Return_False_For_Invalid_Token()
         {
             // Arrange
-            var mockTicketRepository = new Mock<ITicketRepository>();
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "Security:AES_Key", "AllEvents2024891" },
-                { "Security:AES_IV", "E1F5D1A2C9B81234" }
-            }).Build(); 
-
-            var handler = new ValidateTicketCommandHandler(configuration, mockTicketRepository.Object);
-
             // Act
-            var result = await handler.Handle(new ValidateTicketCommand { Token = "invalid-token" }, CancellationToken.None);
+            var result = await _handler.Handle(new ValidateTicketCommand { Token = "invalid-token" }, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccessful);
@@ -157,35 +132,27 @@ namespace AllEvents.TicketManagement.ApplicationTests
         [Fact]
         public async Task ValidateTicketCommand_Should_Return_True_For_Valid_Token()
         {
-            var mockTicketRepository = new Mock<ITicketRepository>();
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "Security:AES_Key", "AllEvents2024891" },
-                { "Security:AES_IV", "E1F5D1A2C9B81234" }
-            }).Build();
-
-            var aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
-            var aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
-
+            // Arrange
             var validTicketId = Guid.NewGuid();
             var validPersonName = "Valid Person";
 
-            var encryptedData = EncryptData($"{validTicketId}:{validPersonName}", aesKey, aesIV);
+            var encryptedData = EncryptData($"{validTicketId}:{validPersonName}");
             var token = Convert.ToBase64String(encryptedData);
 
             var ticket = new Ticket(validTicketId, validPersonName, "Event Title", new byte[0], Guid.NewGuid());
-
-            mockTicketRepository.Setup(repo => repo.GetByIdAsync(validTicketId)).ReturnsAsync(ticket);
-
-            var handler = new ValidateTicketCommandHandler(configuration, mockTicketRepository.Object);
+            _mockTicketRepository.Setup(repo => repo.GetByIdAsync(validTicketId)).ReturnsAsync(ticket);
 
             // Act
-            var result = await handler.Handle(new ValidateTicketCommand { Token = token }, CancellationToken.None);
+            var result = await _handler.Handle(new ValidateTicketCommand { Token = token }, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccessful);
             Assert.Equal("Validation Success", result.Message);
         }
 
+        public void Dispose()
+        {
+            _mockTicketRepository.Reset();
+        }
     }
 }

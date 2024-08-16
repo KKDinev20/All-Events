@@ -18,8 +18,6 @@ namespace AllEvents.TicketManagement.InfrastructureTests
                 .Options;
 
             var loggerFactory = Mock.Of<ILoggerFactory>();
-
-
             var context = new AllEventsDbContext(options, loggerFactory);
             context.Database.EnsureCreated();
 
@@ -33,6 +31,7 @@ namespace AllEvents.TicketManagement.InfrastructureTests
             await context.SaveChangesAsync();
             return context;
         }
+
         private IEventQuery MockEventQuery(AllEventsDbContext context)
         {
             var eventQueryMock = new Mock<IEventQuery>();

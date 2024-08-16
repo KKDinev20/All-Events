@@ -9,7 +9,7 @@ using Moq;
 
 namespace AllEvents.TicketManagement.Tests
 {
-    public class CreateEventCommandHandlerTests
+    public class CreateEventCommandHandlerTests : IDisposable
     {
         private readonly Mock<IAllEventsDbContext> _mockDbContext;
         private readonly Mock<IDistributedCache> _mockCache;
@@ -18,7 +18,7 @@ namespace AllEvents.TicketManagement.Tests
         public CreateEventCommandHandlerTests()
         {
             _mockDbContext = new Mock<IAllEventsDbContext>();
-            _mockCache = new Mock<IDistributedCache>(); 
+            _mockCache = new Mock<IDistributedCache>();
 
             var mockEventDbSet = new Mock<DbSet<Event>>();
             _mockDbContext.Setup(db => db.Events).Returns(mockEventDbSet.Object);
@@ -102,6 +102,12 @@ namespace AllEvents.TicketManagement.Tests
             addedEvent.EventDate.Should().Be(command.EventDate);
             addedEvent.NrOfTickets.Should().Be(command.NrOfTickets);
             addedEvent.IsDeleted.Should().BeFalse();
+        }
+
+        public void Dispose()
+        {
+            _mockDbContext.Reset();
+            _mockCache.Reset();
         }
     }
 }

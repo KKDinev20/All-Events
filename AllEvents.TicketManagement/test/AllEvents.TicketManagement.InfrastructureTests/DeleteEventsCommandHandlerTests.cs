@@ -8,10 +8,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace AllEvents.TicketManagement.InfrastructureTests
 {
