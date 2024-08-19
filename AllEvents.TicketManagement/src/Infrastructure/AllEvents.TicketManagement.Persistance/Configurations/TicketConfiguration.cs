@@ -11,20 +11,25 @@ namespace AllEvents.TicketManagement.Persistance.Configurations
             builder.HasKey(t => t.TicketId);
 
             builder.Property(t => t.PersonName)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                .IsRequired()
+                .HasMaxLength(100);
 
             builder.Property(t => t.EventTitle)
-                   .IsRequired()
-                   .HasMaxLength(200);
+                .IsRequired()
+                .HasMaxLength(200);
 
             builder.Property(t => t.QRCode)
-                   .IsRequired();
+                .IsRequired();
 
             builder.HasOne(t => t.Event)
-                   .WithMany(e => e.Tickets)
-                   .HasForeignKey(t => t.EventId);
+                .WithMany(e => e.Tickets)
+                .HasForeignKey(t => t.EventId)
+                .OnDelete(DeleteBehavior.Restrict); 
 
+            builder.HasOne<Order>() 
+                .WithMany() 
+                .HasForeignKey(t => t.OrderId)
+                .OnDelete(DeleteBehavior.Restrict); 
         }
     }
 }

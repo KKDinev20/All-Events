@@ -20,6 +20,8 @@ namespace AllEvents.TicketManagement.Persistance
 
         public DbSet<Event> Events { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<ExternalUser> ExternalUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,13 +29,34 @@ namespace AllEvents.TicketManagement.Persistance
 
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new TicketConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderConfiguration());
+            modelBuilder.ApplyConfiguration(new ExternalUserConfiguration());
 
             modelBuilder.Entity<Event>(entity =>
             {
                 entity.Property(e => e.NrOfTickets).HasDefaultValue(100);
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             });
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Email)
+                .WithMany(eu => eu.Orders)
+                .HasForeignKey(o => o.ExternalUserId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<Ticket>()
+                .HasOne(t => t.Event)
+                .WithMany(e => e.Tickets)
+                .HasForeignKey(t => t.EventId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<Ticket>()
+                .HasOne<Order>()
+                .WithMany() 
+                .HasForeignKey(t => t.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
