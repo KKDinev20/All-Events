@@ -7,8 +7,8 @@
         public string EventTitle { get; set; } = null!;
         public byte[] QRCode { get; set; } = null!;
         public Guid EventId { get; set; }
+        public Guid OrderId { get; set; }
         public Event Event { get; set; } = null!;
-
         public Ticket(Guid ticketId, string personName, string eventTitle, byte[] qRCode, Guid eventId)
         {
             TicketId = ticketId;
