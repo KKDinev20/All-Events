@@ -1,12 +1,14 @@
 using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Application.Features.Events.Commands;
 using AllEvents.TicketManagement.Application.Features.Events.Queries;
+using AllEvents.TicketManagement.Application.Features.ExternalUsers.Handlers;
 using AllEvents.TicketManagement.Persistance;
 using AllEvents.TicketManagement.Persistance.Caching;
 using AllEvents.TicketManagement.Persistance.Repositories;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SqlServer.Management.Smo.Wmi;
 
 namespace AllEvents.TicketManagement.API
 {
@@ -56,6 +58,8 @@ namespace AllEvents.TicketManagement.API
             // MediatR and Validators
             builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);
             builder.Services.AddMediatR(typeof(UpdateEventCommandHandler).Assembly);
+            builder.Services.AddMediatR(typeof(CreateExternalUserCommandHandler).Assembly);
+
             builder.Services.AddValidatorsFromAssemblyContaining<CreateEventCommandValidator>();
             builder.Services.AddValidatorsFromAssemblyContaining<UpdateEventCommandValidator>();
 

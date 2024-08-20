@@ -37,24 +37,6 @@ namespace AllEvents.TicketManagement.Persistance
                 entity.Property(e => e.NrOfTickets).HasDefaultValue(100);
                 entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             });
-
-            modelBuilder.Entity<Order>()
-                .HasOne(o => o.Email)
-                .WithMany(eu => eu.Orders)
-                .HasForeignKey(o => o.ExternalUserId)
-                .OnDelete(DeleteBehavior.Restrict); 
-
-            modelBuilder.Entity<Ticket>()
-                .HasOne(t => t.Event)
-                .WithMany(e => e.Tickets)
-                .HasForeignKey(t => t.EventId)
-                .OnDelete(DeleteBehavior.Restrict); 
-
-            modelBuilder.Entity<Ticket>()
-                .HasOne<Order>()
-                .WithMany() 
-                .HasForeignKey(t => t.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
         }
 
 
