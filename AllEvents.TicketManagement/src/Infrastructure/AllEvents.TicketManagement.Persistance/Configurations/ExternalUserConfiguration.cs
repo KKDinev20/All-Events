@@ -18,8 +18,9 @@ namespace AllEvents.TicketManagement.Persistance.Configurations
                 .IsUnique();
 
             builder.HasMany(eu => eu.Orders)
-                .WithOne(o => o.Email)
-                .HasForeignKey(o => o.Id);
+                .WithOne(o => o.ExternalUser)
+                .HasForeignKey(o => o.ExternalUserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

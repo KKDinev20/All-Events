@@ -4,6 +4,7 @@ using AllEvents.TicketManagement.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AllEvents.TicketManagement.Persistance.Migrations
 {
     [DbContext(typeof(AllEventsDbContext))]
-    partial class AllEventsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240821115438_RefactorOrder")]
+    partial class RefactorOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,16 +78,12 @@ namespace AllEvents.TicketManagement.Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.ToTable("ExternalUsers");
                 });
 
             modelBuilder.Entity("AllEvents.TicketManagement.Domain.Entities.Order", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
@@ -104,8 +103,6 @@ namespace AllEvents.TicketManagement.Persistance.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EventId");
 
                     b.HasIndex("ExternalUserId", "EventId");
 
@@ -347,21 +344,13 @@ namespace AllEvents.TicketManagement.Persistance.Migrations
 
             modelBuilder.Entity("AllEvents.TicketManagement.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("AllEvents.TicketManagement.Domain.Entities.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AllEvents.TicketManagement.Domain.Entities.ExternalUser", "ExternalUser")
+                    b.HasOne("AllEvents.TicketManagement.Domain.Entities.ExternalUser", "Email")
                         .WithMany("Orders")
-                        .HasForeignKey("ExternalUserId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Event");
-
-                    b.Navigation("ExternalUser");
+                    b.Navigation("Email");
                 });
 
             modelBuilder.Entity("AllEvents.TicketManagement.Domain.Entities.Ticket", b =>

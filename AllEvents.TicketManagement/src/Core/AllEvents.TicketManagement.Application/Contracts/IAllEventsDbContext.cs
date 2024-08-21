@@ -6,6 +6,8 @@ namespace AllEvents.TicketManagement.Application.Contracts
     public interface IAllEventsDbContext
     {
         DbSet<Event> Events { get; }
+        DbSet<Order> Orders { get; }
+        DbSet<ExternalUser> ExternalUsers { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
