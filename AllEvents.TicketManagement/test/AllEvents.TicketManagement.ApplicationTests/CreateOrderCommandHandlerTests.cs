@@ -1,4 +1,5 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
+using AllEvents.TicketManagement.Application.Features.ExternalUsers.Commands;
 using AllEvents.TicketManagement.Application.Features.Orders.Commands;
 using AllEvents.TicketManagement.Application.Features.Orders.Handlers;
 using AllEvents.TicketManagement.Domain.Entities;
@@ -72,6 +73,49 @@ namespace AllEvents.TicketManagement.Application.UnitTests.Orders
 
             // Act & Assert
             await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task CreateOrderCommandHandler_SuccessfullyCreatesOrder()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var command = new CreateOrderCommand
+            {
+                ExternalUserEmail = "test@example.com",
+                EventId = eventId,
+                TicketNames = new List<string> { "Ticket1", "Ticket2" }
+            };
+
+            var eventEntity = new Event { EventId = eventId, NrOfTickets = 10, Price = 100 };
+            var externalUser = new ExternalUser
+            {
+                Id = Guid.NewGuid(),
+                Email = "test@example.com",
+                Orders = new List<Order>() 
+            };
+
+            _contextMock.Setup(x => x.Events)
+                .ReturnsDbSet(new List<Event> { eventEntity });
+
+            _mediatorMock.Setup(x => x.Send(It.IsAny<CreateExternalUserCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(externalUser);
+
+            _contextMock.Setup(x => x.Orders)
+                .ReturnsDbSet(new List<Order>());
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(200, result.TotalAmount);
+
+            _contextMock.Verify(x => x.Orders.Add(It.IsAny<Order>()), Times.Once);
+            _contextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+            Assert.Equal(8, eventEntity.NrOfTickets);
+            Assert.Contains(externalUser.Orders, o => o.EventId == eventId && o.TicketNames.Count == 2);
         }
     }
 }

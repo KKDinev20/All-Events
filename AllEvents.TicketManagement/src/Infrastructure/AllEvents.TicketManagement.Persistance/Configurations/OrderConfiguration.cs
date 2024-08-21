@@ -23,6 +23,17 @@ namespace AllEvents.TicketManagement.Persistance.Configurations
                 .IsRequired();
 
             builder.HasIndex(o => new { o.ExternalUserId, o.EventId });
+
+            builder.HasOne(o => o.ExternalUser)
+                .WithMany(eu => eu.Orders)
+                .HasForeignKey(o => o.ExternalUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(o => o.TicketNames)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
+                );
         }
     }
 }

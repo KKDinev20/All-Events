@@ -8,7 +8,6 @@ using AllEvents.TicketManagement.Persistance.Repositories;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Management.Smo.Wmi;
 
 namespace AllEvents.TicketManagement.API
 {

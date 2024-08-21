@@ -1,6 +1,6 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
-using AllEvents.TicketManagement.Application.Features.ExternalUsers.Commands;
 using AllEvents.TicketManagement.Application.Features.Orders.Commands;
+using AllEvents.TicketManagement.Application.Features.ExternalUsers.Commands;
 using AllEvents.TicketManagement.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +22,7 @@ namespace AllEvents.TicketManagement.Application.Features.Orders.Handlers
         {
             if (request.TicketNames.Count > 8)
             {
-                throw new InvalidOperationException("Cannot order more than 8 tickets.");
+                throw new InvalidOperationException("Cannot order more than 8 tickets per event.");
             }
 
             var eventEntity = await _context.Events
@@ -35,6 +35,20 @@ namespace AllEvents.TicketManagement.Application.Features.Orders.Handlers
 
             var createExternalUserCommand = new CreateExternalUserCommand(request.ExternalUserEmail);
             var externalUser = await _mediator.Send(createExternalUserCommand, cancellationToken);
+
+            var existingOrders = await _context.Orders
+                .Where(o => o.ExternalUserId == externalUser.Id && o.EventId == request.EventId)
+                .ToListAsync(cancellationToken);
+
+            var totalTicketsPurchased = existingOrders
+                .SelectMany(o => o.TicketNames)
+                .Count();
+
+            if (totalTicketsPurchased + request.TicketNames.Count > 8)
+            {
+                var ticketsLeft = 8 - totalTicketsPurchased;
+                throw new InvalidOperationException($"Only {ticketsLeft} tickets left for this event.");
+            }
 
             eventEntity.NrOfTickets -= request.TicketNames.Count;
 
