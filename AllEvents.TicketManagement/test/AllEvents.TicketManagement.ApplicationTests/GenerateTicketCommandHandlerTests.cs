@@ -5,7 +5,6 @@ using AllEvents.TicketManagement.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
-
 namespace AllEvents.TicketManagement.Tests
 {
     public class GenerateTicketCommandHandlerTests
@@ -72,7 +71,6 @@ namespace AllEvents.TicketManagement.Tests
             Assert.Equal("The specified name does not match any names in the order.", exception.Message);
         }
 
-
         [Fact]
         public async Task Handle_EventNotFound_ThrowsArgumentException()
         {
@@ -91,31 +89,32 @@ namespace AllEvents.TicketManagement.Tests
         public async Task Handle_SuccessfulTicketGeneration_UpdatesOrderStatus()
         {
             // Arrange
+            var orderId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var personName = "John Doe";
             var order = new Order
             {
-                Id = Guid.NewGuid(),
+                Id = orderId,
                 Status = OrderStatus.Processing,
-                TicketNames = new List<string> { "John Doe" },
-                EventId = Guid.NewGuid()
+                TicketNames = new List<string> { personName },
+                EventId = eventId
             };
-            var @event = new Event { EventId = order.EventId, Title = "Sample Event" };
-            var command = new GenerateTicketCommand { OrderId = order.Id, EventId = order.EventId, PersonName = "John Doe" };
+            var @event = new Event { EventId = eventId, Title = "Sample Event" };
+            var command = new GenerateTicketCommand { OrderId = orderId, EventId = eventId, PersonName = personName };
 
-            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(order.Id)).ReturnsAsync(order);
-            _mockEventRepository.Setup(repo => repo.GetByIdAsync(order.EventId)).ReturnsAsync(@event);
+            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(order);
+            _mockEventRepository.Setup(repo => repo.GetByIdAsync(eventId)).ReturnsAsync(@event);
             _mockTicketRepository.Setup(repo => repo.AddAsync(It.IsAny<Ticket>())).Returns(Task.CompletedTask);
-            _mockOrderRepository.Setup(repo => repo.UpdateAsync(order)).Returns(Task.CompletedTask);
+            _mockOrderRepository.Setup(repo => repo.UpdateAsync(It.IsAny<Order>())).Returns(Task.CompletedTask);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             _mockOrderRepository.Verify(repo => repo.UpdateAsync(It.Is<Order>(o => o.Status == OrderStatus.Completed && o.TicketNames.Count == 0)), Times.Once);
-            Assert.Equal(order.TicketNames.Count, 0);
+            _mockTicketRepository.Verify(repo => repo.AddAsync(It.IsAny<Ticket>()), Times.Once);
             Assert.Equal("Sample Event", result.EventTitle);
-            Assert.Equal("John Doe", result.PersonName);
+            Assert.Equal(personName, result.PersonName);
         }
-
     }
-
 }
