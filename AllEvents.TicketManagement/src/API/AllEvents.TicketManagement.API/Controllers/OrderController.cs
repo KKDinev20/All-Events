@@ -22,5 +22,13 @@ namespace AllEvents.TicketManagement.API.Controllers
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+
+        [HttpPost("{id}/pay")]
+        public async Task<IActionResult> Pay(Guid id)
+        {
+            var command = new PayOrderCommand(id);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
     }
 }
