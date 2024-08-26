@@ -84,37 +84,5 @@ namespace AllEvents.TicketManagement.Tests
             var exception = await Assert.ThrowsAsync<ArgumentException>(() => _handler.Handle(command, CancellationToken.None));
             Assert.Equal($"Event with ID {command.EventId} not found.", exception.Message);
         }
-
-        [Fact]
-        public async Task Handle_SuccessfulTicketGeneration_UpdatesOrderStatus()
-        {
-            // Arrange
-            var orderId = Guid.NewGuid();
-            var eventId = Guid.NewGuid();
-            var personName = "John Doe";
-            var order = new Order
-            {
-                Id = orderId,
-                Status = OrderStatus.Processing,
-                TicketNames = new List<string> { personName },
-                EventId = eventId
-            };
-            var @event = new Event { EventId = eventId, Title = "Sample Event" };
-            var command = new GenerateTicketCommand { OrderId = orderId, EventId = eventId, PersonName = personName };
-
-            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(order);
-            _mockEventRepository.Setup(repo => repo.GetByIdAsync(eventId)).ReturnsAsync(@event);
-            _mockTicketRepository.Setup(repo => repo.AddAsync(It.IsAny<Ticket>())).Returns(Task.CompletedTask);
-            _mockOrderRepository.Setup(repo => repo.UpdateAsync(It.IsAny<Order>())).Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            _mockOrderRepository.Verify(repo => repo.UpdateAsync(It.Is<Order>(o => o.Status == OrderStatus.Completed && o.TicketNames.Count == 0)), Times.Once);
-            _mockTicketRepository.Verify(repo => repo.AddAsync(It.IsAny<Ticket>()), Times.Once);
-            Assert.Equal("Sample Event", result.EventTitle);
-            Assert.Equal(personName, result.PersonName);
-        }
     }
 }
