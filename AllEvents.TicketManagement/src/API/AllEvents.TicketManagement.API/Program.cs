@@ -5,6 +5,7 @@ using AllEvents.TicketManagement.Application.Features.ExternalUsers.Handlers;
 using AllEvents.TicketManagement.Persistance;
 using AllEvents.TicketManagement.Persistance.Caching;
 using AllEvents.TicketManagement.Persistance.Repositories;
+using AllEvents.TicketManagement.Persistence.Repositories;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,7 @@ namespace AllEvents.TicketManagement.API
             });
 
             builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetService<AllEventsDbContext>());
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IEventRepository, EventRepository>();
             builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 

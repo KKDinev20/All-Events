@@ -5,6 +5,7 @@ using AllEvents.TicketManagement.Persistance;
 using AllEvents.TicketManagement.Persistance.Caching;
 using AllEvents.TicketManagement.Persistance.Repositories;
 using AllEvents.TicketManagement.Persistance.Seeding;
+using AllEvents.TicketManagement.Persistence.Repositories;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -60,6 +61,7 @@ namespace AllEvents.TicketManagement.App
 
             builder.Services.AddScoped<IAllEventsDbContext>(provider => provider.GetRequiredService<AllEventsDbContext>());
             builder.Services.AddScoped<ReadEventsServiceReader>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IEventRepository, EventRepository>();
             builder.Services.AddScoped<ITicketRepository, TicketRepository>();
             builder.Services.AddTransient<DataSeeder>();

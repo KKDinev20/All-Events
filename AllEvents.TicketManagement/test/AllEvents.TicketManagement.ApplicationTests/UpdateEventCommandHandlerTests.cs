@@ -50,7 +50,7 @@ namespace AllEvents.TicketManagement.Tests
         }
 
         [Fact]
-        public async Task Handle_ShouldThrowValidationException_WhenTitleIsMissing()
+        public async Task UpdateEventCommandHandler_ShouldThrowValidationException_WhenTitleIsMissing()
         {
             // Arrange
             var existingEvent = _events[0];
@@ -82,7 +82,7 @@ namespace AllEvents.TicketManagement.Tests
         }
 
         [Fact]
-        public async Task Handle_ShouldThrowValidationException_WhenEventDateIsInPast()
+        public async Task UpdateEventCommandHandler_ShouldThrowValidationException_WhenEventDateIsInPast()
         {
             // Arrange
             var existingEvent = _events[0];
@@ -114,7 +114,7 @@ namespace AllEvents.TicketManagement.Tests
         }
 
         [Fact]
-        public async Task Handle_ShouldThrowValidationException_WhenPriceIsNegative()
+        public async Task UpdateEventCommandHandler_ShouldThrowValidationException_WhenPriceIsNegative()
         {
             // Arrange
             var existingEvent = _events[0];
@@ -146,7 +146,7 @@ namespace AllEvents.TicketManagement.Tests
         }
 
         [Fact]
-        public async Task Handle_ShouldThrowValidationException_WhenCommandIsInvalid()
+        public async Task UpdateEventCommandHandler_ShouldThrowValidationException_WhenCommandIsInvalid()
         {
             // Arrange
             var existingEvent = _events[0];

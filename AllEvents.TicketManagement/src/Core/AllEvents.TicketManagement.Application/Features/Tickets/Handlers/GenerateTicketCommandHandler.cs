@@ -13,15 +13,18 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
 {
     public class GenerateTicketCommandHandler : IRequestHandler<GenerateTicketCommand, TicketModel>
     {
-        private readonly IEventRepository _eventRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly ITicketRepository _ticketRepository;
+        private readonly IEventRepository _eventRepository;
         private readonly byte[] aesKey;
         private readonly byte[] aesIV;
 
-        public GenerateTicketCommandHandler(IConfiguration configuration, IEventRepository eventRepository, ITicketRepository ticketRepository)
+        public GenerateTicketCommandHandler(IConfiguration configuration, IOrderRepository orderRepository, ITicketRepository ticketRepository, IEventRepository eventRepository)
         {
-            _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
             _ticketRepository = ticketRepository ?? throw new ArgumentNullException(nameof(ticketRepository));
+            _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
+            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+
 
             aesKey = Encoding.UTF8.GetBytes(configuration["Security:AES_Key"]);
             aesIV = Encoding.UTF8.GetBytes(configuration["Security:AES_IV"]);
@@ -32,16 +35,42 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
             }
         }
 
-
         public async Task<TicketModel> Handle(GenerateTicketCommand request, CancellationToken cancellationToken)
         {
-            var @event = await _eventRepository.GetByIdAsync(request.EventId);
+            var order = await _orderRepository.GetByIdAsync(request.OrderId);
+            CheckOrder(request, order);
 
+            var @event = await _eventRepository.GetByIdAsync(request.EventId);
             if (@event == null)
             {
                 throw new ArgumentException($"Event with ID {request.EventId} not found.");
             }
 
+            Ticket ticket = await GenerateTicket(request, @event);
+            await UpdateOrder(request, order);
+
+            return new TicketModel(
+                ticketId: ticket.TicketId,
+                personName: ticket.PersonName,
+                eventTitle: ticket.EventTitle,
+                qRCode: ticket.QRCode
+            );
+        }
+
+        private async Task UpdateOrder(GenerateTicketCommand request, Order? order)
+        {
+            order.TicketNames.Remove(request.PersonName);
+
+            if (order.TicketNames.Count == 0)
+            {
+                order.Status = OrderStatus.Completed;
+            }
+
+            await _orderRepository.UpdateAsync(order);
+        }
+
+        private async Task<Ticket> GenerateTicket(GenerateTicketCommand request, Event? @event)
+        {
             var ticketId = Guid.NewGuid();
             var encryptedData = EncryptData($"{ticketId}:{request.PersonName}");
             var appBaseUrl = "https://localhost:7273";
@@ -57,13 +86,25 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
             );
 
             await _ticketRepository.AddAsync(ticket);
+            return ticket;
+        }
 
-            return new TicketModel(
-                ticketId: ticket.TicketId,
-                personName: ticket.PersonName,
-                eventTitle: ticket.EventTitle,
-                qRCode: ticket.QRCode
-            );
+        private static void CheckOrder(GenerateTicketCommand request, Order? order)
+        {
+            if (order == null)
+            {
+                throw new ArgumentException($"Order with ID {request.OrderId} not found.");
+            }
+
+            if (order.Status != OrderStatus.Processing)
+            {
+                throw new InvalidOperationException("Tickets can only be generated for orders in the 'Processing' state.");
+            }
+
+            if (!order.TicketNames.Contains(request.PersonName))
+            {
+                throw new ArgumentException("The specified name does not match any names in the order.");
+            }
         }
 
         private byte[] EncryptData(string plainText)
@@ -106,6 +147,5 @@ namespace AllEvents.TicketManagement.Application.Features.Tickets.Handlers
                 }
             }
         }
-
     }
 }
