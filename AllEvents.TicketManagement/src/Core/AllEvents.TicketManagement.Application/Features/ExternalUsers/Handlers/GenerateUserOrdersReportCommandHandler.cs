@@ -60,7 +60,7 @@ namespace AllEvents.TicketManagement.Application.Reports.Commands
                     FooterHeight: 30
                 );
 
-                XImage logo = LoadLogo(); // Load the embedded logo
+                XImage logo = LoadLogo();
 
                 PdfPage page = document.AddPage();
                 XGraphics gfx = XGraphics.FromPdfPage(page);
