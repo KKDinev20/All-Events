@@ -20,7 +20,13 @@ namespace AllEvents.TicketManagement.Application.Extensions
         {
             var cacheKey = GenerateCacheKey(prefix, key);
             var jsonData = await cache.GetStringAsync(cacheKey);
-            return jsonData == null ? default : JsonConvert.DeserializeObject<T>(jsonData);
+
+            if (jsonData == null)
+            {
+                return default;
+            }
+
+            return JsonConvert.DeserializeObject<T>(jsonData);
         }
 
         public static async Task RemoveCacheAsync(this IDistributedCache cache, string key, string prefix)

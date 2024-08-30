@@ -5,50 +5,78 @@
     ViewData["Title"] = "Update Event";
 }
 
-<h1>Update Event</h1>
+<h1 class="mb-4">Update Event</h1>
 
-<form method="post">
+<form method="post" class="needs-validation" novalidate>
     <input type="hidden" asp-for="Event.EventId" />
 
-    <div class="form-group">
-        <label asp-for="Event.Title" class="control-label"></label>
+    <div class="mb-3">
+        <label asp-for="Event.Title" class="form-label"></label>
         <input asp-for="Event.Title" class="form-control" />
-        <span asp-validation-for="Event.Title" class="text-danger"></span>
+        <div class="invalid-feedback">
+            <span asp-validation-for="Event.Title"></span>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Event.Location" class="control-label"></label>
+    <div class="mb-3">
+        <label asp-for="Event.Location" class="form-label"></label>
         <input asp-for="Event.Location" class="form-control" />
-        <span asp-validation-for="Event.Location" class="text-danger"></span>
+        <div class="invalid-feedback">
+            <span asp-validation-for="Event.Location"></span>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Event.Price" class="control-label"></label>
-        <input asp-for="Event.Price" class="form-control" />
-        <span asp-validation-for="Event.Price" class="text-danger"></span>
+    <div class="mb-3">
+        <label asp-for="Event.Price" class="form-label"></label>
+        <input asp-for="Event.Price" class="form-control" type="number" step="0.01" />
+        <div class="invalid-feedback">
+            <span asp-validation-for="Event.Price"></span>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Event.Category" class="control-label"></label>
-        <select asp-for="Event.Category" class="form-control">
+    <div class="mb-3">
+        <label asp-for="Event.Category" class="form-label"></label>
+        <select asp-for="Event.Category" class="form-select">
             <option value="">Select Category</option>
             @foreach (var category in Enum.GetValues(typeof(EventCategory)).Cast<EventCategory>())
             {
                 <option value="@category">@category</option>
             }
         </select>
-        <span asp-validation-for="Event.Category" class="text-danger"></span>
+        <div class="invalid-feedback">
+            <span asp-validation-for="Event.Category"></span>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Event.EventDate" class="control-label"></label>
-        <input asp-for="Event.EventDate" class="form-control" type="date" />
-        <span asp-validation-for="Event.EventDate" class="text-danger"></span>
+    <div class="mb-3">
+        <label asp-for="Event.EventDate" class="form-label"></label>
+        <input asp-for="Event.EventDate" type="date" class="form-control" />
+        <div class="invalid-feedback">
+            <span asp-validation-for="Event.EventDate"></span>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Event.NrOfTickets" class="control-label"></label>
-        <input asp-for="Event.NrOfTickets" class="form-control" />
-        <span asp-validation-for="Event.NrOfTickets" class="text-danger"></span>
+    <div class="mb-3">
+        <label asp-for="Event.NrOfTickets" class="form-label"></label>
+        <input asp-for="Event.NrOfTickets" type="number" class="form-control" />
+        <div class="invalid-feedback">
+            <span asp-validation-for="Event.NrOfTickets"></span>
+        </div>
     </div>
     <button type="submit" class="btn btn-primary">Update</button>
 </form>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
 }
