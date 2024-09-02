@@ -64,6 +64,7 @@ namespace AllEvents.TicketManagement.App
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IEventRepository, EventRepository>();
             builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+            builder.Services.AddScoped<IExternalUserRepository, ExternalUserRepository>();
             builder.Services.AddTransient<DataSeeder>();
 
             // MediatR and Validators

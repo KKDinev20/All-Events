@@ -55,6 +55,7 @@ namespace AllEvents.TicketManagement.API
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IEventRepository, EventRepository>();
             builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+            builder.Services.AddScoped<IExternalUserRepository, ExternalUserRepository>();
 
             // MediatR and Validators
             builder.Services.AddMediatR(typeof(CreateEventCommandHandler).Assembly);

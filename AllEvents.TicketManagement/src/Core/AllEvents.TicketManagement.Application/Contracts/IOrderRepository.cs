@@ -6,5 +6,6 @@ namespace AllEvents.TicketManagement.Application.Contracts
     {
         Task UpdateAsync(Order order);
         Task<List<Order>> GetOrdersByUserAsync(Guid externalUserId);
+        Task<List<Order>> GetOrdersByUserAndDateRangeAsync(Guid userId, DateTime? fromDate, DateTime? toDate);
     }
 }
