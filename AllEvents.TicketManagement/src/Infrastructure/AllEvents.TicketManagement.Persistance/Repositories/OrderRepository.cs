@@ -56,6 +56,5 @@ namespace AllEvents.TicketManagement.Persistence.Repositories
                 })
                 .ToDictionaryAsync(x => x.EventId, x => x.TicketCount);
         }
-
     }
 }

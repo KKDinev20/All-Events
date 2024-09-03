@@ -18,9 +18,9 @@ namespace AllEvents.TicketManagement.Web.Pages
         [BindProperty]
         public EventCategory Category { get; set; }
         [BindProperty]
-        public DateTime? FromDate { get; set; }
+        public DateTime FromDate { get; set; }
         [BindProperty]
-        public DateTime? ToDate { get; set; }
+        public DateTime ToDate { get; set; }
         public byte[] ReportCsvData { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
