@@ -43,5 +43,12 @@ namespace AllEvents.TicketManagement.Persistence.Repositories
 
             return await query.OrderByDescending(o => o.CreatedOn).ToListAsync();
         }
+
+        public async Task<List<Order>> GetOrdersByEventIdsAsync(List<Guid> eventIds)
+        {
+            return await _context.Set<Order>()
+                .Where(o => eventIds.Contains(o.EventId) && o.Status == OrderStatus.Processing)
+                .ToListAsync();
+        }
     }
 }

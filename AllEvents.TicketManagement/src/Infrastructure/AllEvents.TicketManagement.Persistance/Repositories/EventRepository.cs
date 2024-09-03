@@ -33,5 +33,23 @@ namespace AllEvents.TicketManagement.Persistance.Repositories
         {
             return await _context.Set<Event>().AnyAsync(e => e.EventId == eventId);
         }
+
+        public async Task<List<Event>> GetEventsByCategoryAndDateRangeAsync(EventCategory category, DateTime? fromDate, DateTime? toDate)
+        {
+            var query = _context.Set<Event>()
+                                .Where(e => e.Category == category && !e.IsDeleted);
+
+            if (fromDate.HasValue)
+            {
+                query = query.Where(e => e.EventDate >= fromDate.Value);
+            }
+
+            if (toDate.HasValue)
+            {
+                query = query.Where(e => e.EventDate <= toDate.Value);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }
