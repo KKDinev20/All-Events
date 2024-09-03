@@ -1,13 +1,7 @@
 ﻿using AllEvents.TicketManagement.Application.Contracts;
 using AllEvents.TicketManagement.Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AllEvents.TicketManagement.Application.Reports.Commands
 {
@@ -34,19 +28,27 @@ namespace AllEvents.TicketManagement.Application.Reports.Commands
             }
 
             var eventIds = events.Select(e => e.EventId).ToList();
-            var orders = await _orderRepository.GetOrdersByEventIdsAsync(eventIds);
+
+            var ticketCounts = await _orderRepository.GetTicketCountsByEventIdsAsync(eventIds);
 
             var reportLines = new List<string>();
             var header = "Event Title,Event Location,Tickets Sold,Amount per Ticket,Total per Event";
             reportLines.Add(header);
 
             var categoryTotal = 0M;
+            categoryTotal = GenerateCSVReport(events, ticketCounts, reportLines, categoryTotal);
 
+            var totalLine = $",,,,{categoryTotal.ToString(CultureInfo.InvariantCulture)}";
+            reportLines.Add(totalLine);
+
+            return System.Text.Encoding.UTF8.GetBytes(string.Join(Environment.NewLine, reportLines));
+        }
+
+        private decimal GenerateCSVReport(List<Event> events, Dictionary<Guid, int> ticketCounts, List<string> reportLines, decimal categoryTotal)
+        {
             foreach (var ev in events)
             {
-                var ticketsSold = orders.Count(o => o.EventId == ev.EventId && o.Status == OrderStatus.Processing);
-
-                if (ticketsSold > 0) 
+                if (ticketCounts.TryGetValue(ev.EventId, out int ticketsSold) && ticketsSold > 0)
                 {
                     var amountPerEvent = ev.Price * ticketsSold;
                     categoryTotal += amountPerEvent;
@@ -56,10 +58,7 @@ namespace AllEvents.TicketManagement.Application.Reports.Commands
                 }
             }
 
-            var totalLine = $",,,,{categoryTotal.ToString(CultureInfo.InvariantCulture)}";
-            reportLines.Add(totalLine);
-
-            return System.Text.Encoding.UTF8.GetBytes(string.Join(Environment.NewLine, reportLines));
+            return categoryTotal;
         }
 
         private string EscapeCsvField(string field)
