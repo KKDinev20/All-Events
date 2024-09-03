@@ -43,5 +43,18 @@ namespace AllEvents.TicketManagement.Persistence.Repositories
 
             return await query.OrderByDescending(o => o.CreatedOn).ToListAsync();
         }
+
+        public async Task<Dictionary<Guid, int>> GetTicketCountsByEventIdsAsync(List<Guid> eventIds)
+        {
+            return await _context.Set<Order>()
+                .Where(o => eventIds.Contains(o.EventId) && o.Status == OrderStatus.Processing)
+                .GroupBy(o => o.EventId)
+                .Select(g => new
+                {
+                    EventId = g.Key,
+                    TicketCount = g.Sum(o => o.TicketNames.Count)
+                })
+                .ToDictionaryAsync(x => x.EventId, x => x.TicketCount);
+        }
     }
 }
