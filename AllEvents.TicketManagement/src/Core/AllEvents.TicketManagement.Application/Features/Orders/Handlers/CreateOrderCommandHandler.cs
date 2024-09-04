@@ -41,8 +41,7 @@ namespace AllEvents.TicketManagement.Application.Features.Orders.Handlers
                 .ToListAsync(cancellationToken);
 
             var totalTicketsPurchased = existingOrders
-                .SelectMany(o => o.TicketNames)
-                .Count();
+                .Sum(o => o.TicketCount);
 
             if (totalTicketsPurchased + request.TicketNames.Count > 8)
             {
@@ -59,7 +58,8 @@ namespace AllEvents.TicketManagement.Application.Features.Orders.Handlers
                 Status = OrderStatus.Created,
                 ExternalUserId = externalUser.Id,
                 EventId = request.EventId,
-                TicketNames = request.TicketNames
+                TicketNames = request.TicketNames,
+                TicketCount = request.TicketNames.Count
             };
 
             _context.Orders.Add(order);

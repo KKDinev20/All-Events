@@ -10,6 +10,7 @@
         public Guid EventId { get; set; }
         public Event Event { get; set; } = null!;
         public List<string> TicketNames { get; set; } = new List<string>();
+        public int TicketCount { get; set; }
     }
 
 }
