@@ -117,5 +117,77 @@ namespace AllEvents.TicketManagement.Application.UnitTests.Orders
             Assert.Equal(8, eventEntity.NrOfTickets);
             Assert.Contains(externalUser.Orders, o => o.EventId == eventId && o.TicketNames.Count == 2);
         }
+
+        [Fact]
+        public async Task Handle_ShouldThrowException_WhenTotalTicketsExceedsLimit()
+        {
+            // Arrange
+            var command = new CreateOrderCommand
+            {
+                EventId = Guid.NewGuid(),
+                ExternalUserEmail = "test@example.com",
+                TicketNames = new List<string> { "Ticket1", "Ticket2", "Ticket3", "Ticket4", "Ticket5", "Ticket6", "Ticket7", "Ticket8", "Ticket9" }
+            };
+
+            var existingOrder = new Order
+            {
+                TicketNames = new List<string> { "ExistingTicket1", "ExistingTicket2" },
+                ExternalUserId = Guid.NewGuid()
+            };
+
+            _contextMock.Setup(c => c.Orders)
+                .ReturnsDbSet(new List<Order> { existingOrder }.AsQueryable());
+
+            _contextMock.Setup(c => c.Events)
+                .ReturnsDbSet(new List<Event>
+                {
+                new Event { EventId = command.EventId, NrOfTickets = 10 }
+                }.AsQueryable());
+
+            _mediatorMock.Setup(m => m.Send(It.IsAny<CreateExternalUserCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ExternalUser { Id = existingOrder.ExternalUserId });
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
+            Assert.Equal("Cannot order more than 8 tickets per event.", exception.Message);
+        }
+
+        [Fact]
+        public async Task Handle_ShouldUpdateTicketCount_WhenOrderIsCreated()
+        {
+            // Arrange
+            var command = new CreateOrderCommand
+            {
+                EventId = Guid.NewGuid(),
+                ExternalUserEmail = "test@example.com",
+                TicketNames = new List<string> { "Ticket1", "Ticket2" }
+            };
+
+            var eventEntity = new Event
+            {
+                EventId = command.EventId,
+                NrOfTickets = 10,
+                Price = 20
+            };
+
+            _contextMock.Setup(c => c.Events)
+                .ReturnsDbSet(new List<Event> { eventEntity }.AsQueryable());
+
+            _contextMock.Setup(c => c.Orders)
+                .ReturnsDbSet(new List<Order>().AsQueryable());
+
+            var externalUser = new ExternalUser { Id = Guid.NewGuid() };
+            _mediatorMock.Setup(m => m.Send(It.IsAny<CreateExternalUserCommand>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(externalUser);
+
+            // Act
+            var response = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(2 * eventEntity.Price, response.TotalAmount);
+
+            _contextMock.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
     }
 }

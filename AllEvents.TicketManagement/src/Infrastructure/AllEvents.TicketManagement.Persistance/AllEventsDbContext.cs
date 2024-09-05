@@ -12,6 +12,7 @@ namespace AllEvents.TicketManagement.Persistance
     {
         private readonly ILoggerFactory _loggerFactory;
 
+
         public AllEventsDbContext(DbContextOptions<AllEventsDbContext> options, ILoggerFactory loggerFactory)
             : base(options)
         {

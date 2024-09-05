@@ -52,7 +52,7 @@ namespace AllEvents.TicketManagement.Persistence.Repositories
                 .Select(g => new
                 {
                     EventId = g.Key,
-                    TicketCount = g.Sum(o => o.TicketNames.Count)
+                    TicketCount = g.Sum(o => o.TicketCount)
                 })
                 .ToDictionaryAsync(x => x.EventId, x => x.TicketCount);
         }
