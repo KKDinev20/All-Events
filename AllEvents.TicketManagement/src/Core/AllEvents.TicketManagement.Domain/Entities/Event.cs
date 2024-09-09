@@ -11,6 +11,8 @@
         public int NrOfTickets { get; set; } = 100;
         public bool IsDeleted { get; set; } = false;
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+        public ICollection<Coupon> Coupons { get; set; } = new List<Coupon>();
+
 
         public void Delete()
         {

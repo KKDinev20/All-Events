@@ -23,6 +23,8 @@ namespace AllEvents.TicketManagement.Persistance
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<ExternalUser> ExternalUsers { get; set; }
+        public DbSet<Coupon> Coupons { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +34,8 @@ namespace AllEvents.TicketManagement.Persistance
             modelBuilder.ApplyConfiguration(new TicketConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new ExternalUserConfiguration());
+            modelBuilder.ApplyConfiguration(new CouponConfiguration());
+
 
             modelBuilder.Entity<Event>(entity =>
             {
