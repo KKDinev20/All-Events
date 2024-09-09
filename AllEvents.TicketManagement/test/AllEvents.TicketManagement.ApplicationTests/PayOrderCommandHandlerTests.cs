@@ -22,7 +22,7 @@ namespace AllEvents.TicketManagement.ApplicationTests
         public async Task Handle_OrderDoesNotExist_ThrowsInvalidOperationException()
         {
             // Arrange
-            var command = new PayOrderCommand(Guid.NewGuid());
+            var command = new PayOrderCommand(Guid.NewGuid(), "PromoCode");
 
             _contextMock.Setup(x => x.Orders)
                 .ReturnsDbSet(new List<Order>());
@@ -46,7 +46,7 @@ namespace AllEvents.TicketManagement.ApplicationTests
             _contextMock.Setup(x => x.Orders)
                 .ReturnsDbSet(new List<Order> { order });
 
-            var command = new PayOrderCommand(orderId);
+            var command = new PayOrderCommand(orderId, "PromoCode");
 
             // Act & Assert
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
@@ -61,20 +61,54 @@ namespace AllEvents.TicketManagement.ApplicationTests
             var order = new Order
             {
                 Id = orderId,
-                Status = OrderStatus.Created 
+                Status = OrderStatus.Created,
+                TotalPrice = 100.0m
             };
 
             _contextMock.Setup(x => x.Orders)
                 .ReturnsDbSet(new List<Order> { order });
 
-            var command = new PayOrderCommand(orderId);
-
+            var command = new PayOrderCommand(orderId, null); 
             // Act
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
+            Assert.Equal(OrderStatus.Processing, order.Status);
             _contextMock.Verify(x => x.Orders.Update(It.Is<Order>(o => o.Status == OrderStatus.Processing)));
             _contextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        [Fact]
+        public async Task Handle_WithNonExistentPromoCode_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            var orderId = Guid.NewGuid();
+            var order = new Order
+            {
+                Id = orderId,
+                Status = OrderStatus.Created,
+                TotalPrice = 100.0m
+            };
+
+            _contextMock.Setup(x => x.Orders)
+                .ReturnsDbSet(new List<Order> { order });
+
+            _contextMock.Setup(x => x.Coupons)
+                .ReturnsDbSet(new List<Coupon>()); 
+
+            var command = new PayOrderCommand(orderId, "INVALIDCODE");
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _handler.Handle(command, CancellationToken.None));
+
+            Assert.Equal("Invalid or expired promo code.", exception.Message);
+
+            Assert.Equal(100.0m, order.TotalPrice);
+            _contextMock.Verify(x => x.Orders.Update(It.IsAny<Order>()), Times.Never);
+            _contextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+
     }
 }
