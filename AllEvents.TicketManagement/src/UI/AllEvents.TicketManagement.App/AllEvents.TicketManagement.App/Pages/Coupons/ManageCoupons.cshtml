@@ -1,0 +1,80 @@
+﻿@page
+@model AllEvents.TicketManagement.App.Pages.Coupons.ManageCouponsModel
+@{
+}
+
+<h2>Manage Coupons</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Coupon.Name">Coupon Name (Promo Code)</label>
+        <input asp-for="Coupon.Name" class="form-control" placeholder="Enter promo code (e.g., Event15)" />
+        <span asp-validation-for="Coupon.Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Coupon.DiscountPercent">Discount Percent (%)</label>
+        <input asp-for="Coupon.DiscountPercent" type="number" class="form-control" />
+        <span asp-validation-for="Coupon.DiscountPercent" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Coupon.FixedDiscountAmount">Fixed Discount Amount</label>
+        <input asp-for="Coupon.FixedDiscountAmount" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="Coupon.FixedDiscountAmount" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Coupon.FromDate">From Date</label>
+        <input asp-for="Coupon.FromDate" type="date" class="form-control" />
+        <span asp-validation-for="Coupon.FromDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Coupon.ToDate">To Date</label>
+        <input asp-for="Coupon.ToDate" type="date" class="form-control" />
+        <span asp-validation-for="Coupon.ToDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Coupon.EventId">Event</label>
+        <select asp-for="Coupon.EventId" class="form-control">
+            <option value="">All Events</option>
+            @foreach (var evnt in Model.Events)
+            {
+                <option value="@evnt.EventId">@evnt.Title</option>
+            }
+        </select>
+        <span asp-validation-for="Coupon.EventId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<h3>Coupons</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Discount Percent</th>
+            <th>Fixed Discount</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Event</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var coupon in Model.Coupons)
+        {
+            <tr>
+                <td>@coupon.Name</td>
+                <td>@coupon.DiscountPercent%</td>
+                <td>@coupon.FixedDiscountAmount</td>
+                <td>@coupon.FromDate.ToShortDateString()</td>
+                <td>@coupon.ToDate.ToShortDateString()</td>
+                <td>@(coupon.Event != null ? coupon.Event.Title : "All Events")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

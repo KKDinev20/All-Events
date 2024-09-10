@@ -8,6 +8,8 @@ namespace AllEvents.TicketManagement.Application.Contracts
         DbSet<Event> Events { get; }
         DbSet<Order> Orders { get; }
         DbSet<ExternalUser> ExternalUsers { get; }
+        DbSet<Coupon> Coupons { get; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

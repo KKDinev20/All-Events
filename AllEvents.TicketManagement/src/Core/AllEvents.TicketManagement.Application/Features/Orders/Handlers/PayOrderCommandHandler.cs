@@ -30,9 +30,40 @@ namespace AllEvents.TicketManagement.Application.Features.Orders.Handlers
                 throw new InvalidOperationException("Only orders in 'Created' state can be processed.");
             }
 
+            Coupon? coupon = null;
+            if (!string.IsNullOrWhiteSpace(request.PromoCode))
+            {
+                coupon = await _context.Coupons
+                    .FirstOrDefaultAsync(c => c.Name == request.PromoCode &&
+                                              c.FromDate <= DateTime.Now &&
+                                              c.ToDate >= DateTime.Now, cancellationToken);
+
+                if (coupon == null)
+                {
+                    throw new InvalidOperationException("Invalid or expired promo code.");
+                }
+            }
+
+            if (coupon != null)
+            {
+                decimal discountAmount = 0;
+
+                if (coupon.DiscountPercent.HasValue)
+                {
+                    discountAmount = order.TotalPrice * (coupon.DiscountPercent.Value / 100m);
+                }
+                else if (coupon.FixedDiscountAmount.HasValue)
+                {
+                    discountAmount = coupon.FixedDiscountAmount.Value;
+                }
+
+                order.TotalPrice = Math.Max(order.TotalPrice - discountAmount, 0);
+            }
+
             order.Status = OrderStatus.Processing;
 
             _context.Orders.Update(order);
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
