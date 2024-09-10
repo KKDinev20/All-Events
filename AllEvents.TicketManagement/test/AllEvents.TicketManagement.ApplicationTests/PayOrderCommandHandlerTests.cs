@@ -109,6 +109,84 @@ namespace AllEvents.TicketManagement.ApplicationTests
             _contextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         }
 
+        [Fact]
+        public async Task Handle_WithFivePercentDiscountCoupon_AppliesPercentageDiscount()
+        {
+            // Arrange
+            var orderId = Guid.NewGuid();
+            var order = new Order
+            {
+                Id = orderId,
+                Status = OrderStatus.Created,
+                TotalPrice = 100.0m
+            };
+
+            var coupon = new Coupon
+            {
+                Name = "5PERCENT",
+                DiscountPercent = 5,
+                FixedDiscountAmount = null,
+                FromDate = new DateTime(2000, 1, 1),
+                ToDate = new DateTime(2025, 12, 31)
+            };
+
+            _contextMock.Setup(x => x.Orders)
+                .ReturnsDbSet(new List<Order> { order });
+
+            _contextMock.Setup(x => x.Coupons)
+                .ReturnsDbSet(new List<Coupon> { coupon });
+
+            var command = new PayOrderCommand(orderId, "5PERCENT");
+
+            // Act
+            await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(95.0m, order.TotalPrice);
+            Assert.Equal(OrderStatus.Processing, order.Status);
+            _contextMock.Verify(x => x.Orders.Update(It.Is<Order>(o => o.Status == OrderStatus.Processing)));
+            _contextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Handle_WithTenUnitFixedDiscountCoupon_AppliesFixedAmountDiscount()
+        {
+            // Arrange
+            var orderId = Guid.NewGuid();
+            var order = new Order
+            {
+                Id = orderId,
+                Status = OrderStatus.Created,
+                TotalPrice = 100.0m
+            };
+
+            var coupon = new Coupon
+            {
+                Name = "10UNITOFF",
+                DiscountPercent = null,
+                FixedDiscountAmount = 10.0m,
+                FromDate = new DateTime(2000, 1, 1),
+                ToDate = new DateTime(2025, 12, 31)
+            };
+
+            _contextMock.Setup(x => x.Orders)
+                .ReturnsDbSet(new List<Order> { order });
+
+            _contextMock.Setup(x => x.Coupons)
+                .ReturnsDbSet(new List<Coupon> { coupon });
+
+            var command = new PayOrderCommand(orderId, "10UNITOFF");
+
+            // Act
+            await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(90.0m, order.TotalPrice);
+            Assert.Equal(OrderStatus.Processing, order.Status);
+            _contextMock.Verify(x => x.Orders.Update(It.Is<Order>(o => o.Status == OrderStatus.Processing)));
+            _contextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
 
     }
 }

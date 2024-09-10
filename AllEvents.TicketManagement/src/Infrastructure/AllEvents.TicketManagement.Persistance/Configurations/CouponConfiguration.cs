@@ -19,6 +19,10 @@ namespace AllEvents.TicketManagement.Persistance.Configurations
                    .WithMany(e => e.Coupons)
                    .HasForeignKey(c => c.EventId)
                    .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasCheckConstraint("CK_Coupon_Discount",
+                "(DiscountPercent IS NOT NULL AND FixedDiscountAmount IS NULL) OR " +
+                "(DiscountPercent IS NULL AND FixedDiscountAmount IS NOT NULL)");
         }
     }
 }
