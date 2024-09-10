@@ -90,7 +90,7 @@ namespace AllEvents.TicketManagement.Application.Features.Orders.Handlers
             };
         }
 
-        private async Task<decimal> ApplyCouponDiscount(CreateOrderCommand request, Event? eventEntity, CancellationToken cancellationToken)
+        public async Task<decimal> ApplyCouponDiscount(CreateOrderCommand request, Event? eventEntity, CancellationToken cancellationToken)
         {
             decimal totalAmount = eventEntity.Price * request.TicketNames.Count;
 
@@ -115,7 +115,7 @@ namespace AllEvents.TicketManagement.Application.Features.Orders.Handlers
             return totalAmount;
         }
 
-        private static decimal ApplyLoyaltyDiscount(decimal totalAmountSpent)
+        public static decimal ApplyLoyaltyDiscount(decimal totalAmountSpent)
         {
             decimal loyaltyDiscount = 0;
             if (totalAmountSpent >= 1000)
