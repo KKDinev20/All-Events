@@ -77,16 +77,16 @@ namespace AllEvents.TicketManagement.Application.Features.Orders.Handlers
             totalAmount = Math.Max(totalAmount, 0);
 
             externalUser.TotalAmountSpent += totalAmount;  
-            _context.ExternalUsers.Update(externalUser); 
+            _context.ExternalUsers.Update(externalUser);
 
-            order.TotalPrice = totalAmount;
+            order.TotalPrice = Math.Round(totalAmount, 2);
 
             await _context.SaveChangesAsync(cancellationToken);
 
             return new PlaceOrderResponse
             {
                 OrderId = order.Id,
-                TotalAmount = totalAmount
+                TotalAmount = Math.Round(totalAmount, 2)
             };
         }
 
