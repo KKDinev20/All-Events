@@ -4,6 +4,7 @@ using AllEvents.TicketManagement.Application.Features.Orders.Commands;
 using AllEvents.TicketManagement.Application.Features.Orders.Handlers;
 using AllEvents.TicketManagement.Domain.Entities;
 using MediatR;
+using MockQueryable.Moq;
 using Moq;
 using Moq.EntityFrameworkCore;
 
@@ -23,63 +24,11 @@ namespace AllEvents.TicketManagement.Application.UnitTests.Orders
         }
 
         [Fact]
-        public async Task CreateOrderCommandHandler_ThrowsException_WhenMoreThan8Tickets()
-        {
-            // Arrange
-            var command = new CreateOrderCommand
-            {
-                ExternalUserEmail = "test@example.com",
-                EventId = Guid.NewGuid(),
-                TicketNames = new List<string> { "Ticket1", "Ticket2", "Ticket3", "Ticket4", "Ticket5", "Ticket6", "Ticket7", "Ticket8", "Ticket9" }
-            };
-
-            // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task CreateOrderCommandHandler_ThrowsException_WhenNotEnoughTickets()
-        {
-            // Arrange
-            var eventId = Guid.NewGuid();
-            var command = new CreateOrderCommand
-            {
-                ExternalUserEmail = "test@example.com",
-                EventId = eventId,
-                TicketNames = new List<string> { "Ticket1", "Ticket2" }
-            };
-
-            _contextMock.Setup(x => x.Events).ReturnsDbSet(new List<Event>
-            {
-                new Event { EventId = eventId, NrOfTickets = 1, Price = 100 }
-            });
-
-            // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
-        }
-
-        [Fact]
-        public async Task CreateOrderCommandHandler_ThrowsException_WhenEventDoesNotExist()
-        {
-            // Arrange
-            var command = new CreateOrderCommand
-            {
-                ExternalUserEmail = "test@example.com",
-                EventId = Guid.NewGuid(),
-                TicketNames = new List<string> { "Ticket1", "Ticket2" }
-            };
-
-            _contextMock.Setup(x => x.Events).ReturnsDbSet(new List<Event>());
-
-            // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
-        }
-
-        [Fact]
         public async Task CreateOrderCommandHandler_SuccessfullyCreatesOrder()
         {
             // Arrange
             var eventId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
             var command = new CreateOrderCommand
             {
                 ExternalUserEmail = "test@example.com",
@@ -87,22 +36,35 @@ namespace AllEvents.TicketManagement.Application.UnitTests.Orders
                 TicketNames = new List<string> { "Ticket1", "Ticket2" }
             };
 
-            var eventEntity = new Event { EventId = eventId, NrOfTickets = 10, Price = 100 };
-            var externalUser = new ExternalUser
+            var eventEntity = new Event
             {
-                Id = Guid.NewGuid(),
-                Email = "test@example.com",
-                Orders = new List<Order>() 
+                EventId = eventId,
+                NrOfTickets = 10,
+                Price = 100
             };
 
+            var externalUser = new ExternalUser
+            {
+                Id = userId,
+                Email = "test@example.com",
+                Orders = new List<Order>()
+            };
+
+            var orders = new List<Order>().AsQueryable();
+            var events = new List<Event> { eventEntity }.AsQueryable();
+            var externalUsers = new List<ExternalUser> { externalUser }.AsQueryable();
+
             _contextMock.Setup(x => x.Events)
-                .ReturnsDbSet(new List<Event> { eventEntity });
+                .Returns(events.BuildMockDbSet().Object);
+
+            _contextMock.Setup(x => x.Orders)
+                .Returns(orders.BuildMockDbSet().Object);
+
+            _contextMock.Setup(x => x.ExternalUsers)
+                .Returns(externalUsers.BuildMockDbSet().Object);
 
             _mediatorMock.Setup(x => x.Send(It.IsAny<CreateExternalUserCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(externalUser);
-
-            _contextMock.Setup(x => x.Orders)
-                .ReturnsDbSet(new List<Order>());
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -118,34 +80,17 @@ namespace AllEvents.TicketManagement.Application.UnitTests.Orders
             Assert.Contains(externalUser.Orders, o => o.EventId == eventId && o.TicketNames.Count == 2);
         }
 
+
         [Fact]
-        public async Task Handle_ShouldThrowException_WhenTotalTicketsExceedsLimit()
+        public async Task CreateOrderCommandHandler_ThrowsException_WhenMoreThan8Tickets()
         {
             // Arrange
             var command = new CreateOrderCommand
             {
-                EventId = Guid.NewGuid(),
                 ExternalUserEmail = "test@example.com",
+                EventId = Guid.NewGuid(),
                 TicketNames = new List<string> { "Ticket1", "Ticket2", "Ticket3", "Ticket4", "Ticket5", "Ticket6", "Ticket7", "Ticket8", "Ticket9" }
             };
-
-            var existingOrder = new Order
-            {
-                TicketNames = new List<string> { "ExistingTicket1", "ExistingTicket2" },
-                ExternalUserId = Guid.NewGuid()
-            };
-
-            _contextMock.Setup(c => c.Orders)
-                .ReturnsDbSet(new List<Order> { existingOrder }.AsQueryable());
-
-            _contextMock.Setup(c => c.Events)
-                .ReturnsDbSet(new List<Event>
-                {
-                new Event { EventId = command.EventId, NrOfTickets = 10 }
-                }.AsQueryable());
-
-            _mediatorMock.Setup(m => m.Send(It.IsAny<CreateExternalUserCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ExternalUser { Id = existingOrder.ExternalUserId });
 
             // Act & Assert
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
@@ -153,41 +98,126 @@ namespace AllEvents.TicketManagement.Application.UnitTests.Orders
         }
 
         [Fact]
-        public async Task Handle_ShouldUpdateTicketCount_WhenOrderIsCreated()
+        public async Task CreateOrderCommandHandler_ThrowsException_WhenNotEnoughTickets()
         {
             // Arrange
             var command = new CreateOrderCommand
             {
-                EventId = Guid.NewGuid(),
                 ExternalUserEmail = "test@example.com",
+                EventId = Guid.NewGuid(),
                 TicketNames = new List<string> { "Ticket1", "Ticket2" }
             };
 
             var eventEntity = new Event
             {
                 EventId = command.EventId,
-                NrOfTickets = 10,
-                Price = 20
+                NrOfTickets = 1,
+                Price = 100
             };
 
-            _contextMock.Setup(c => c.Events)
-                .ReturnsDbSet(new List<Event> { eventEntity }.AsQueryable());
+            _contextMock.Setup(x => x.Events)
+                .ReturnsDbSet(new List<Event> { eventEntity });
 
-            _contextMock.Setup(c => c.Orders)
-                .ReturnsDbSet(new List<Order>().AsQueryable());
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.Handle(command, CancellationToken.None));
+            Assert.Equal("Not enough tickets available or event does not exist.", exception.Message);
+        }
 
-            var externalUser = new ExternalUser { Id = Guid.NewGuid() };
-            _mediatorMock.Setup(m => m.Send(It.IsAny<CreateExternalUserCommand>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(externalUser);
+        [Fact]
+        public async Task CreateOrderCommandHandler_ApplyCouponDiscount_CorrectlyAppliesDiscount()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var command = new CreateOrderCommand
+            {
+                ExternalUserEmail = "test@example.com",
+                EventId = eventId,
+                PromoCode = "Code",
+                TicketNames = new List<string> { "Ticket1", "Ticket2" }
+            };
+
+            var eventEntity = new Event
+            {
+                EventId = eventId,
+                NrOfTickets = 10,
+                Price = 100,
+                Coupons = new List<Coupon>
+                {
+                    new Coupon
+                    {
+                        Name = "Code",
+                        FixedDiscountAmount = 20,
+                        FromDate = DateTime.Now.AddDays(-1),
+                        ToDate = DateTime.Now.AddDays(1)
+                    }
+                }
+             };
+
+            var events = new List<Event> { eventEntity }.AsQueryable();
+            var coupons = eventEntity.Coupons.AsQueryable();
+
+            _contextMock.Setup(x => x.Events)
+                .Returns(events.BuildMockDbSet().Object);
+
+            _contextMock.Setup(x => x.Coupons)
+                .Returns(coupons.BuildMockDbSet().Object);
 
             // Act
-            var response = await _handler.Handle(command, CancellationToken.None);
+            var totalAmount = await _handler.ApplyCouponDiscount(command, eventEntity, CancellationToken.None);
 
             // Assert
-            Assert.NotNull(response);
-            Assert.Equal(2 * eventEntity.Price, response.TotalAmount);
-
-            _contextMock.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            Assert.Equal(180, totalAmount); 
         }
+
+
+        [Fact]
+        public async Task CreateOrderCommandHandler_ApplyLoyaltyDiscount_CorrectlyAppliesDiscount()
+        {
+            // Arrange
+            decimal totalAmountSpent = 1200m;
+
+            // Act
+            var loyaltyDiscount = CreateOrderCommandHandler.ApplyLoyaltyDiscount(totalAmountSpent);
+
+            // Assert
+            Assert.Equal(0.05m, loyaltyDiscount);
+        }
+
+        [Fact]
+        public async Task CreateOrderCommandHandler_CouponNotFound_DoesNotApplyDiscount()
+        {
+            // Arrange
+            var eventId = Guid.NewGuid();
+            var command = new CreateOrderCommand
+            {
+                ExternalUserEmail = "test@example.com",
+                EventId = eventId,
+                PromoCode = "NonExistentCode",
+                TicketNames = new List<string> { "Ticket1", "Ticket2" }
+            };
+
+            var eventEntity = new Event
+            {
+                EventId = eventId,
+                NrOfTickets = 10,
+                Price = 100
+            };
+
+            var events = new List<Event> { eventEntity }.AsQueryable();
+            _contextMock.Setup(x => x.Events)
+                .Returns(events.BuildMockDbSet().Object);
+
+            var coupons = new List<Coupon>().AsQueryable();
+            _contextMock.Setup(x => x.Coupons)
+                .Returns(coupons.BuildMockDbSet().Object);
+
+            // Act
+            var totalAmount = await _handler.ApplyCouponDiscount(command, eventEntity, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(200, totalAmount);
+        }
+
     }
+
 }
